@@ -1,0 +1,10 @@
+# Folder
+venv
+__pychache__
+*/__pychache__/*
+__pychache__/*
+
+
+# Files
+playground.py
+.env
