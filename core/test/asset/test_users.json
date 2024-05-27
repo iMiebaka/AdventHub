@@ -1,0 +1,122 @@
+[
+  {
+    "first_name": "Kayla",
+    "last_name": "Young",
+    "email": "cynthiaconner@example.org",
+    "password": "12345"
+  },
+  {
+    "first_name": "Laura",
+    "last_name": "Green",
+    "email": "erin34@example.net",
+    "password": "12345"
+  },
+  {
+    "first_name": "Lori",
+    "last_name": "Mcdonald",
+    "email": "jasminesingh@example.org",
+    "password": "12345"
+  },
+  {
+    "first_name": "Brandon",
+    "last_name": "Brown",
+    "email": "christopherharris@example.com",
+    "password": "12345"
+  },
+  {
+    "first_name": "Denise",
+    "last_name": "Lee",
+    "email": "toddtammy@example.net",
+    "password": "12345"
+  },
+  {
+    "first_name": "Brian",
+    "last_name": "Johnson",
+    "email": "krista39@example.com",
+    "password": "12345"
+  },
+  {
+    "first_name": "Karen",
+    "last_name": "Robinson",
+    "email": "washingtonsteven@example.net",
+    "password": "12345"
+  },
+  {
+    "first_name": "Samantha",
+    "last_name": "Ramirez",
+    "email": "utran@example.com",
+    "password": "12345"
+  },
+  {
+    "first_name": "Deborah",
+    "last_name": "Richard",
+    "email": "ccook@example.org",
+    "password": "12345"
+  },
+  {
+    "first_name": "Monica",
+    "last_name": "Grant",
+    "email": "lisaedwards@example.org",
+    "password": "12345"
+  },
+  {
+    "first_name": "Rebecca",
+    "last_name": "Wilson",
+    "email": "gonzalezmelissa@example.com",
+    "password": "12345"
+  },
+  {
+    "first_name": "Brittany",
+    "last_name": "Tucker",
+    "email": "jonathanbenson@example.net",
+    "password": "12345"
+  },
+  {
+    "first_name": "Kristen",
+    "last_name": "Carpenter",
+    "email": "uduncan@example.net",
+    "password": "12345"
+  },
+  {
+    "first_name": "Lisa",
+    "last_name": "Rios",
+    "email": "oliverkenneth@example.com",
+    "password": "12345"
+  },
+  {
+    "first_name": "Kathy",
+    "last_name": "Cortez",
+    "email": "melissadelgado@example.com",
+    "password": "12345"
+  },
+  {
+    "first_name": "Sean",
+    "last_name": "Castillo",
+    "email": "douglas16@example.org",
+    "password": "12345"
+  },
+  {
+    "first_name": "Nicholas",
+    "last_name": "Moreno",
+    "email": "codycochran@example.com",
+    "password": "12345"
+  },
+  {
+    "first_name": "Robert",
+    "last_name": "Benson",
+    "email": "pattonmorgan@example.net",
+    "password": "12345"
+  },
+  {
+    "first_name": "Shannon",
+    "last_name": "Steele",
+    "email": "cynthiaoliver@example.net",
+    "password": "12345"
+  },
+  {
+    "first_name": "Joseph",
+    "last_name": "Hanson",
+    "email": "johnsonmark@example.org",
+    "password": "12345"
+  }
+]

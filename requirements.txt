@@ -1,0 +1,8 @@
+fastapi
+odmantic
+pytest
+pydantic_settings
+python-dotenv
+pytest-asyncio
+PyJWT
+passlib
