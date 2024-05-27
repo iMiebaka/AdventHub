@@ -25,7 +25,8 @@ class UserSchema(Base):
     password: str
 
 class UserAuthResponeSchema(Base):
-    token: str
+    access_token: str
+    token_type: str
 
 class UserLoginSchema(Base):
     email: str

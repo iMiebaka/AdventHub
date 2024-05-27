@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Request
 from settings import Engine, ENV
 from core.models.user import User
 from core.models.profile import Profile
@@ -7,8 +7,8 @@ from core.utils.security import get_password_hash, authenticate_user, create_acc
 from core.utils.exceptions import *
 from core.test.payload import Payload
 import logging
-
-
+from typing import Annotated
+from fastapi.security import OAuth2PasswordRequestForm
 
 LOGGER = logging.getLogger(__name__)
 engine = Engine
@@ -51,4 +51,19 @@ async def login_user(
         raise InvalidCredentialsException()
 
     token = create_access_token(user)
-    return UserAuthResponeSchema(token=token)
+    
+    return UserAuthResponeSchema(access_token=token, token_type="bearer")
+
+@router.post("/oauth", response_model=UserAuthResponeSchema)
+async def login_user(
+        form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
+):
+    user = await authenticate_user(
+        Engine, form_data.username, form_data.password
+    )
+    if user is None:
+        raise InvalidCredentialsException()
+
+    token = create_access_token(user)
+    
+    return UserAuthResponeSchema(access_token=token, token_type="bearer")

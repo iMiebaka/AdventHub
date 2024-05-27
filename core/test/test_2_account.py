@@ -1,9 +1,9 @@
-import pytest
+import pytest, httpx
 from settings import Engine
 from core.models.user import User
 from httpx import AsyncClient
 from core.app import app
-import logging, asyncio
+import logging, asyncio, base64
 from fastapi.testclient import TestClient
 from .payload import test_data
 
@@ -11,6 +11,11 @@ from .payload import test_data
 client = TestClient(app)
 engine = Engine
 LOGGER = logging.getLogger(__name__)
+
+def get_basic_auth_header(username: str, password: str) -> str:
+    credentials = f"{username}:{password}"
+    encoded_credentials = base64.b64encode(credentials.encode("utf-8")).decode("utf-8")
+    return f"Basic {encoded_credentials}"
 
 @pytest.fixture(scope="session")
 def event_loop():
@@ -53,13 +58,13 @@ async def test_4_login_user(async_app_client):
         json=user,
     )
     assert response.status_code == 200
-    assert "token" in response.json()
-    token = response.json()["token"]
+    assert "access_token" in response.json()
+    access_token = response.json()["access_token"]
     
     response = await async_app_client.get(
         "/account/profile",
         headers={
-            "Authorization": f"Bearer {token}"
+            "Authorization": f"Bearer {access_token}"
         }
     )
     res_data = response.json()
