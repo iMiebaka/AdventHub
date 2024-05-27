@@ -47,8 +47,22 @@ async def test_2_create_existing_user(async_app_client):
 
 @pytest.mark.asyncio
 async def test_4_login_user(async_app_client):
+    user = test_data.user_list[0]
     response = await async_app_client.post(
         "/account/login",
-        json=test_data.user_list[0],
+        json=user,
     )
-    LOGGER.info(response.json())
+    assert response.status_code == 200
+    assert "token" in response.json()
+    token = response.json()["token"]
+    
+    response = await async_app_client.get(
+        "/account/profile",
+        headers={
+            "Authorization": f"Bearer {token}"
+        }
+    )
+    res_data = response.json()
+    assert res_data["email"] == user["email"]
+    assert res_data["first_name"] == user["first_name"]
+    assert res_data["last_name"] == user["last_name"]

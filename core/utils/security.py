@@ -23,7 +23,7 @@ class Token(BaseModel):
 
 
 class TokenContent(BaseModel):
-    username: str
+    public_id: str
 
 
 PWD_CONTEXT = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -44,8 +44,9 @@ class OAuth2PasswordToken(OAuth2):
     async def __call__(self, request: Request) -> Optional[str]:
         authorization: str = request.headers.get("Authorization")
         scheme, param = get_authorization_scheme_param(authorization)
-        if not authorization or scheme.lower() != "token":
+        if not authorization or scheme.lower() != "bearer":
             return None
+        print(scheme)
         return cast(str, param)
 
 
@@ -61,13 +62,15 @@ def get_password_hash(password):
 
 
 async def get_user_instance(
-    engine: AIOEngine, username: Optional[str] = None, email: Optional[str] = None
+    engine: AIOEngine, username: Optional[str] = None, email: Optional[str] = None, public_id: Optional[str] = None
 ) -> Optional[User]:
     """Get a user instance from its username"""
     if username is not None:
         query = User.username == username
     elif email is not None:
         query = User.email == email
+    elif public_id is not None:
+        query = User.public_id == public_id
     else:
         return None
     user = await engine.find_one(User, query)
@@ -87,9 +90,9 @@ async def authenticate_user(
 
 
 def create_access_token(user: User) -> str:
-    token_content = TokenContent(username=user.username)
+    token_content = TokenContent(public_id=user.public_id)
     expire = datetime.utcnow() + timedelta(minutes=SETTINGS.ACCESS_TOKEN_EXPIRE_MINUTES)
-    to_encode = {"exp": expire, "sub": token_content.json()}
+    to_encode = {"exp": expire, "sub": token_content.model_dump()}
     encoded_jwt = jwt.encode(
         to_encode, SETTINGS.SECRET_KEY.get_secret_value(), algorithm=SETTINGS.ALGORITHM
     )
@@ -113,11 +116,12 @@ async def get_current_user_instance(
         raise CredentialsException()
 
     try:
-        token_content = TokenContent.parse_raw(payload.get("sub"))
+        public_id = payload.get("sub")["public_id"]
+        # token_content = TokenContent.model_dump_json(payload.get("sub"))
     except ValidationError:
         raise CredentialsException()
-
-    user = await get_user_instance(Engine, username=token_content.username)
+    
+    user = await get_user_instance(Engine, public_id=public_id)
     if user is None:
         raise CredentialsException()
     return user
@@ -137,4 +141,4 @@ async def get_current_user(
     user_instance: User = Depends(get_current_user_instance),
     token: str = Depends(OAUTH2_SCHEME),
 ) -> UserSchema:
-    return UserSchema(token=token, **user_instance.dict())
+    return UserSchema(token=token, **user_instance.model_dump())

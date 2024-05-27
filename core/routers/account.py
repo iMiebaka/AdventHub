@@ -1,9 +1,9 @@
-from fastapi import APIRouter, Body
+from fastapi import APIRouter, Depends
 from settings import Engine, ENV
 from core.models.user import User
 from core.models.profile import Profile
 from core.schema.user import UserSchema, UserAuthResponeSchema, UserLoginSchema, UserProfileSchema
-from core.utils.security import get_password_hash, authenticate_user, create_access_token
+from core.utils.security import get_password_hash, authenticate_user, create_access_token, get_current_user
 from core.utils.exceptions import *
 from core.test.payload import Payload
 import logging
@@ -15,22 +15,20 @@ engine = Engine
 router = APIRouter(
     prefix="/account",
     tags=["account"],
-    responses={404: {"description": "Not found"}},
+    responses={404: {"details": "Not found"}},
 )
 
 
-@router.get("")
-async def read_item():
-    payload = Payload()
-    user = payload.user_list[0]
-    user_exist = await engine.find_one(User, User.email == user["email"])
-    if user_exist is None:
+@router.get("/profile", response_model=UserProfileSchema)
+async def profile(
+    current_user: User = Depends(get_current_user)
+):
+    user = await engine.find_one(User, User.email == current_user.email)
+    if user is None:
         raise HTTPException(404)
-    # user_exist = await engine.find_one(User, User.email == user["email"])
-    LOGGER.info(user_exist)
-    return {}
+    return user
 
-@router.post("/sign-up", response_model=UserProfileSchema)
+@router.post("/sign-up")
 async def sign_up(user: UserSchema):
     user_exist = await engine.find_one(User, User.email == user.email)
     if user_exist:
@@ -39,7 +37,8 @@ async def sign_up(user: UserSchema):
     user = User(**user.model_dump(), profile=profile)
     user.password = get_password_hash(user.password)
     await engine.save(user)
-    return await engine.find_one(User, User.email == user.email)
+    return user
+
 
 @router.post("/login", response_model=UserAuthResponeSchema)
 async def login_user(
@@ -52,5 +51,4 @@ async def login_user(
         raise InvalidCredentialsException()
 
     token = create_access_token(user)
-    LOGGER.info(user.model_dump())
-    return UserAuthResponeSchema(user=User(token=token))
+    return UserAuthResponeSchema(token=token)
