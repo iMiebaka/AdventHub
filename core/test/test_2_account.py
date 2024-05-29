@@ -53,23 +53,22 @@ async def test_2_create_existing_user(async_app_client):
 @pytest.mark.asyncio
 async def test_4_login_user(async_app_client):
     user = test_data.user_list[0]
-    fake_auth = user
-    fake_auth["password"] = "12346"
+    user["password"] = "12346"
     response = await async_app_client.post(
         "/account/login",
-        json=fake_auth,
+        json=user,
     )
-    LOGGER.info(response.json())
     assert response.status_code == 400
     
-    fake_auth = user
-    fake_auth["email"] = "wrongemail@adventhub.com"
+    user = test_data.user_list[0]
+    user["email"] = "wrongemail@adventhub.com"
     response = await async_app_client.post(
         "/account/login",
-        json=fake_auth,
+        json=user,
     )
     assert response.status_code == 400
 
+    user = test_data.user_list[0]
     response = await async_app_client.post(
         "/account/login",
         json=user,
@@ -85,7 +84,6 @@ async def test_5_user_profile(async_app_client):
         json=user,
     )
     assert response.status_code == 200
-    assert "access_token" in response.json()
     access_token = response.json()["access_token"]
 
     response = await async_app_client.get(

@@ -13,7 +13,6 @@ from starlette.requests import Request
 from passlib.context import CryptContext
 
 from core.models.user import User
-from core.schema.user import UserSchema
 from settings import SETTINGS, Engine
 
 
@@ -141,5 +140,6 @@ async def get_current_user_optional_instance(
 async def get_current_user(
     user_instance: User = Depends(get_current_user_instance),
     token: str = Depends(OAUTH2_SCHEME),
-) -> UserSchema:
+):
+    from core.schema.user import UserSchema
     return UserSchema(token=token, **user_instance.model_dump())

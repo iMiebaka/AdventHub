@@ -1,4 +1,5 @@
-from odmantic import Model, Field, Index, Reference, ObjectId
+from odmantic import Model, Field, Index, Reference
+from odmantic.bson import ObjectId
 from uuid import uuid4
 from datetime import datetime
 from .profile import Profile
@@ -13,7 +14,7 @@ class User(Model):
     public_id: str = uuid4().hex
     created_at: datetime = Field(default_factory=datetime.utcnow)
     profile: Profile = Reference()
-    messages: List[ObjectId] = []
+    exhortation: List[ObjectId] = []
 
     model_config = {
         "indexes": lambda: [

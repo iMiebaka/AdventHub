@@ -3,9 +3,8 @@ from settings import Engine, ENV
 from core.models.user import User
 from core.models.profile import Profile
 from core.schema.user import UserSchema, UserAuthResponeSchema, UserLoginSchema, UserProfileSchema
-from core.utils.security import get_password_hash, authenticate_user, create_access_token, get_current_user
+from core.utils.security import  authenticate_user, create_access_token, get_current_user
 from core.utils.exceptions import *
-from core.test.payload import Payload
 import logging
 from typing import Annotated
 from fastapi.security import OAuth2PasswordRequestForm
@@ -28,14 +27,13 @@ async def profile(
         raise HTTPException(404)
     return user
 
-@router.post("/sign-up")
+@router.post("/sign-up", response_model=UserProfileSchema)
 async def sign_up(user: UserSchema):
     user_exist = await engine.find_one(User, User.email == user.email)
     if user_exist:
         raise HTTPException(400, detail="Email already exist")
     profile= Profile(profile_picture = f"https://ui-avatars.com/api/?name={user.first_name[0]+user.last_name}")
     user = User(**user.model_dump(), profile=profile)
-    user.password = get_password_hash(user.password)
     await engine.save(user)
     return user
 
@@ -51,7 +49,6 @@ async def login_user(
         raise InvalidCredentialsException()
 
     token = create_access_token(user)
-    
     return UserAuthResponeSchema(access_token=token, token_type="bearer")
 
 @router.post("/oauth", response_model=UserAuthResponeSchema)
@@ -65,5 +62,4 @@ async def login_user(
         raise InvalidCredentialsException()
 
     token = create_access_token(user)
-    
     return UserAuthResponeSchema(access_token=token, token_type="bearer")
