@@ -2,6 +2,10 @@ from .base import Base
 from pydantic import EmailStr, SecretStr
 from odmantic import ObjectId
 from typing import Optional
+from pydantic import model_validator
+from core.utils.security import get_password_hash
+from typing_extensions import Self
+
 
 class ProfileSchema(Base):
     postion: Optional[str] = None
@@ -23,6 +27,11 @@ class UserSchema(Base):
     last_name: str
     email: EmailStr
     password: str
+
+    @model_validator(mode="after")
+    def hash_password(self) -> Self:
+        self.password = get_password_hash(self.password)
+        return self
 
 class UserAuthResponeSchema(Base):
     access_token: str

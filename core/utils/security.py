@@ -41,7 +41,6 @@ class OAuth2PasswordToken(OAuth2):
         super().__init__(flows=flows, scheme_name=scheme_name, auto_error=False)
 
     async def __call__(self, request: Request) -> Optional[str]:
-        print(request.headers)
         authorization: str = request.headers.get("Authorization")
         scheme, param = get_authorization_scheme_param(authorization)
         if not authorization or scheme.lower() != "bearer":
@@ -115,7 +114,6 @@ async def get_current_user_instance(
         raise CredentialsException()
 
     try:
-        print(payload)
         public_id = payload.get("sub")["public_id"]
         # token_content = TokenContent.model_dump_json(payload.get("sub"))
     except ValidationError:

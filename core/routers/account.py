@@ -3,7 +3,7 @@ from settings import Engine, ENV
 from core.models.user import User
 from core.models.profile import Profile
 from core.schema.user import UserSchema, UserAuthResponeSchema, UserLoginSchema, UserProfileSchema
-from core.utils.security import  authenticate_user, create_access_token, get_current_user, init_passkey_history
+from core.utils.security import  authenticate_user, create_access_token, get_current_user_instance, init_passkey_history
 from core.utils.exceptions import *
 import logging
 from typing import Annotated
@@ -20,7 +20,7 @@ router = APIRouter(
 
 @router.get("/profile", response_model=UserProfileSchema)
 async def profile(
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_current_user_instance)
 ):
     user = await engine.find_one(User, User.email == current_user.email)
     if user is None:

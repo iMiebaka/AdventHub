@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from core.routers import account
+from core.routers import exhortation
 from starlette.middleware.cors import CORSMiddleware
 
 app = FastAPI()
@@ -14,9 +15,8 @@ app.add_middleware(
 
 @app.get("/")
 async def root():
-    return {"message": "Tomato"}
+    return {"message": "Advent Hub"}
 
-# @app.post("/user")
-# @account.login_user
 
 app.include_router(account.router)
+app.include_router(exhortation.router)
