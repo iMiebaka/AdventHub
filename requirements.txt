@@ -6,3 +6,4 @@ python-dotenv
 pytest-asyncio
 PyJWT
 passlib
+pycrypto

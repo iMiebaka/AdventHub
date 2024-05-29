@@ -3,7 +3,7 @@ from settings import Engine, ENV
 from core.models.user import User
 from core.models.profile import Profile
 from core.schema.user import UserSchema, UserAuthResponeSchema, UserLoginSchema, UserProfileSchema
-from core.utils.security import  authenticate_user, create_access_token, get_current_user
+from core.utils.security import  authenticate_user, create_access_token, get_current_user, init_passkey_history
 from core.utils.exceptions import *
 import logging
 from typing import Annotated
@@ -32,7 +32,9 @@ async def sign_up(user: UserSchema):
     user_exist = await engine.find_one(User, User.email == user.email)
     if user_exist:
         raise HTTPException(400, detail="Email already exist")
-    profile= Profile(profile_picture = f"https://ui-avatars.com/api/?name={user.first_name[0]+user.last_name}")
+    profile= Profile(
+        profile_picture = f"https://ui-avatars.com/api/?name={user.first_name[0]+user.last_name}",
+        pass_history=init_passkey_history(user.password))
     user = User(**user.model_dump(), profile=profile)
     await engine.save(user)
     return user

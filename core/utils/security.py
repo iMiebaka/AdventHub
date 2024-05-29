@@ -5,7 +5,7 @@ from fastapi import Depends, HTTPException
 from fastapi.openapi.models import OAuthFlows as OAuthFlowsModel
 from fastapi.security import OAuth2
 from fastapi.security.utils import get_authorization_scheme_param
-import jwt
+import jwt, hashlib
 from odmantic import AIOEngine
 from .exceptions import NotAuthenticatedException, CredentialsException
 from pydantic import BaseModel, ValidationError
@@ -143,3 +143,29 @@ async def get_current_user(
 ):
     from core.schema.user import UserSchema
     return UserSchema(token=token, **user_instance.model_dump())
+
+# from Crypto.Cipher import AES
+# import base64
+# from settings import SETTINGS
+
+# def mutulate_pass_key(pass_key: str) -> str:
+#     cipher = AES.new(SETTINGS.SECRET_PASS_KEY.get_secret_value(), AES.MODE_CBC, "advent-hub")
+#     return base64.b64encode(cipher.encrypt(pass_key))
+
+# def init_passkey_history(pass_key:str) -> str:
+#     return [mutulate_pass_key(pass_key=pass_key)]
+
+# def update_passkey_history(pass_key:str, existing_keys: list[str]) -> list[str]:
+#     new_key = mutulate_pass_key(pass_key=pass_key)
+#     if new_key in existing_keys:
+#         raise AssertionError("This password has been used before")
+#     return existing_keys.pop(new_key)
+
+def init_passkey_history(pass_key:str) -> str:
+    return [hashlib.sha256(pass_key.encode()).hexdigest()]
+
+def update_passkey_history(pass_key:str, existing_keys: list[str]) -> list[str]:
+    new_key = hashlib.sha256(pass_key.encode()).hexdigest()
+    if new_key in existing_keys:
+        raise AssertionError("This password has been used before")
+    return existing_keys.pop(new_key)
