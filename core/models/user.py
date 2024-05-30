@@ -7,12 +7,12 @@ from typing import List
 
 
 class User(Model):
-    first_name: str
-    last_name: str
+    first_name: str = Field(key_name="firstName")
+    last_name: str = Field(key_name="lastName")
     email: str = Field(unique=True)
     password: str
-    public_id: str = Field(unique=True)
-    created_at: datetime = Field(default_factory=datetime.utcnow)
+    public_id: str = Field(unique=True, key_name="publicId")
+    created_at: datetime = Field(default_factory=datetime.utcnow, key_name="createdAt")
     profile: Profile = Reference()
     exhortation: List[ObjectId] = []
 

@@ -2,6 +2,8 @@ from .base import Base
 from typing_extensions import List
 from .user import UserDisplayProfileSchema
 from datetime import datetime
+from odmantic import ObjectId
+
 
 class CommentSchema(Base):
     body: str
@@ -10,6 +12,7 @@ class CommentSchema(Base):
 
 
 class CommentSchemaLogic(Base):
+    id: ObjectId
     body: str
     edited: bool
     author: UserDisplayProfileSchema
@@ -22,7 +25,7 @@ class CreateCommentSchema(Base):
     slug: str
 
 class CommentListSchema(Base):
-    total_page: int
+    totalPage: int
     page: int
     count: int
     data: List[CommentSchemaLogic]
