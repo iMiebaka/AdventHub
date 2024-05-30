@@ -60,7 +60,8 @@ async def test_2_read_exhortation(async_app_client: AsyncClient):
 @pytest.mark.asyncio(scope="session")
 async def test_3_update_exhortation(async_app_client: AsyncClient):
 
-    access_token = TEST_DATA.read_token(0)
+    access_tokens:list = TEST_DATA.read_token("")
+    access_token = access_tokens[0] 
     response = await async_app_client.get(
         "/exhortation",
     )
@@ -102,8 +103,28 @@ async def test_3_update_exhortation(async_app_client: AsyncClient):
     assert res_data["slug"] == slug
     assert res_data["media_type"] == "TEXT"
     
+    access_tokens.pop(0)
+    for iter, access_token in enumerate(access_tokens):
+        if iter == 4:
+            break
+        response = await async_app_client.put(
+            f"/exhortation?slug={slug}",
+            json=post,
+            headers={
+                "Authorization": f"Bearer {access_token}"
+            }
+        )
+        assert response.status_code == 401
 
-
+    response = await async_app_client.put(
+        f"/exhortation?slug=jsdSJDSSDh",
+        json=post,
+        headers={
+            "Authorization": f"Bearer {access_token}"
+        }
+    )
+    assert response.status_code == 404
+    
 @pytest.mark.asyncio(scope="session")
 async def test_4_delete_exhortation(async_app_client: AsyncClient):
     access_token = TEST_DATA.read_token(0)

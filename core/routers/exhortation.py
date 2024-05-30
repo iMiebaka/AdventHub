@@ -60,16 +60,15 @@ async def update(
     patch: UpdateExhortationSchema,
     current_user: User = Depends(get_current_user_instance)
 ):
+    result = await engine.find_one(Exhortation, Exhortation.slug == slug)
+    if result is None:
+        raise HTTPException(404, detail="We could not find this Exhortation")
+    if result.author.id != current_user.id:
+        raise HTTPException(401, detail="We could not find this Exhortation")
     try:
-        result = await engine.find_one(Exhortation, Exhortation.slug == slug)
-        if result is None:
-                raise HTTPException(404, detail="We could not find this Exhortation")
-        if result.author.id != current_user.id:
-            raise HTTPException(401, detail="We could not find this Exhortation")
         result.model_update(patch)
         result.edited = True
         result.edited_at = datetime.utcnow()
-        
         await engine.save(result)
         return result
     except Exception as ex:

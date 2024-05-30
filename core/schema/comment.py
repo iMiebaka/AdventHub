@@ -5,12 +5,6 @@ from datetime import datetime
 from odmantic import ObjectId
 
 
-class CommentSchema(Base):
-    body: str
-    reaction: List[str] = []
-    edited: bool = False
-
-
 class CommentSchemaLogic(Base):
     id: ObjectId
     body: str
@@ -19,6 +13,9 @@ class CommentSchemaLogic(Base):
     reaction: List[str]
     edited_at: datetime
     created_at: datetime
+
+class UpdateCommentSchemaLogic(Base):
+    body: str
 
 class CreateCommentSchema(Base):
     body: str

@@ -6,6 +6,7 @@ from uuid import uuid4
 from bson import ObjectId
 from settings import Engine
 from core.models.comment import User
+from core.models.comment import Comment
 
 
 engine = Engine
@@ -168,3 +169,79 @@ async def test_2_read_comment(async_app_client: AsyncClient):
         countChecker = countChecker + len(res_data["data"])
 
     assert count == countChecker
+
+
+@pytest.mark.asyncio(scope="session")
+async def test_3_update_comment(async_app_client: AsyncClient):
+    comment = await engine.find_one(Comment)
+    id = comment.id
+    access_tokens = TEST_DATA.read_token("")
+    access_token = access_tokens[0]
+    new_comment = {"body": "lorem has changed"}
+    
+    # Update post ✅
+    response = await async_app_client.put(
+        f"/comment/exhortation?id={id}",
+        json=new_comment,
+        headers={
+            "Authorization": f"Bearer {access_token}"
+        }
+    )
+    res_data = response.json()  
+    assert response.status_code == 200
+    assert res_data["body"] == new_comment["body"]
+    new_comment["body"] = "I want to force my way in"
+
+    access_token = access_tokens[1]
+    response = await async_app_client.put(
+        f"/comment/exhortation?id={id}",
+        json=new_comment,
+        headers={
+            "Authorization": f"Bearer {access_token}"
+        }
+    )
+    res_data = response.json() 
+    assert response.status_code == 401
+
+    access_token = access_tokens[2]
+    response = await async_app_client.put(
+        f"/comment/exhortation?id={id}",
+        json=new_comment,
+        headers={
+            "Authorization": f"Bearer {access_token}"
+        }
+    )
+    res_data = response.json() 
+    assert response.status_code == 401
+    
+    access_token = access_tokens[3]
+    response = await async_app_client.put(
+        f"/comment/exhortation?id={id}",
+        json=new_comment,
+        headers={
+            "Authorization": f"Bearer {access_token}"
+        }
+    )
+    res_data = response.json() 
+    assert response.status_code == 401
+
+    new_comment["body"] = "No one can take the place"
+    access_token = access_tokens[0]
+    response = await async_app_client.put(
+        f"/comment/exhortation?id={id}",
+        json=new_comment,
+        headers={
+            "Authorization": f"Bearer {access_token}"
+        }
+    )
+    res_data = response.json() 
+    assert response.status_code == 200
+
+    response = await async_app_client.put(
+        f"/comment/exhortation?id={ObjectId()}",
+        json=new_comment,
+        headers={
+            "Authorization": f"Bearer {access_token}"
+        }
+    )
+    assert response.status_code == 404
