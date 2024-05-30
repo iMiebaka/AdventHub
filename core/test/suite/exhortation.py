@@ -1,5 +1,5 @@
 import logging
-from .payload import test_data
+from ..payload import test_data
 from httpx import AsyncClient
 
 
