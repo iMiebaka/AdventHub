@@ -1,5 +1,5 @@
 import logging, pytest
-from .payload import test_data
+from .payload import test_data as TEST_DATA
 from httpx import AsyncClient, ASGITransport
 from core.app import app
 
@@ -15,7 +15,7 @@ async def async_app_client():
 
 @pytest.mark.asyncio(scope="session")
 async def test_1_create_exhortation(async_app_client: AsyncClient):
-    user = test_data.user_list(0)
+    user = TEST_DATA.user_list(0)
     response = await async_app_client.post(
             "/account/login",
             json=user,
@@ -25,7 +25,7 @@ async def test_1_create_exhortation(async_app_client: AsyncClient):
     access_token = response.json()["access_token"]
 
 
-    post = test_data.exhortation_list["textBase"][0]
+    post = TEST_DATA.exhortation_list["textBase"][0]
     response = await async_app_client.post(
         "/exhortation",
         json=post,
@@ -65,7 +65,7 @@ async def test_2_read_exhortation(async_app_client: AsyncClient):
 
 @pytest.mark.asyncio(scope="session")
 async def test_3_update_exhortation(async_app_client: AsyncClient):
-    user = test_data.user_list(0)
+    user = TEST_DATA.user_list(0)
     response = await async_app_client.post(
             "/account/login",
             json=user,
@@ -117,7 +117,7 @@ async def test_3_update_exhortation(async_app_client: AsyncClient):
 
 @pytest.mark.asyncio(scope="session")
 async def test_4_delete_exhortation(async_app_client: AsyncClient):
-    user = test_data.user_list(0)
+    user = TEST_DATA.user_list(0)
     response = await async_app_client.post(
             "/account/login",
             json=user,
@@ -126,7 +126,7 @@ async def test_4_delete_exhortation(async_app_client: AsyncClient):
 
     # Create post
     for index in range(2):
-        post  = test_data.exhortation_list["textBase"][index + 1]
+        post  = TEST_DATA.exhortation_list["textBase"][index + 1]
         response = await async_app_client.post(
             "/exhortation",
             json=post,

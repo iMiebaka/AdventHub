@@ -50,9 +50,12 @@ async def get(
 ):  
     skip = (page - 1) * limit
     query=Comment.exhortation == exhortationId
-    exhortation = await engine.find(Comment, query, skip=skip, limit=limit*1)
+    comments = await engine.find(Comment, query, skip=skip, limit=limit*1)
     count = await engine.count(model=Comment)
     total_page = math.ceil(count/limit) if count >= limit else 1
-    data = [CommentSchemaLogic(**e.model_dump()) for e in exhortation]
+    data = [CommentSchemaLogic(**e.model_dump()) for e in comments]
+    if len(data) == 0:
+        return CommentListSchema(page=1, data=data, total_page=0, count=0)
+
     return CommentListSchema(page=page, data=data, total_page=total_page, count=count)
     
