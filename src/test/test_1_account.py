@@ -1,12 +1,12 @@
 import pytest
 from settings import Engine
-from core.models.user import User
+from src.models.user import User
 import logging
 from .payload import test_data as TEST_DATA
-from core.app import app
+from src.app import app
 from httpx import AsyncClient, ASGITransport
-from core.utils.security import create_access_token, get_current_user_instance
-from core.models.user import User
+from src.utils.security import create_access_token, get_current_user_instance
+from src.models.user import User
 from settings import Engine
 from time import sleep
 

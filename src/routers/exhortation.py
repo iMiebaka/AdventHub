@@ -1,11 +1,11 @@
 from fastapi import APIRouter, Depends
 from settings import Engine
-from core.models.user import User
-from core.models.exhortation import Exhortation
-from core.schema.exhortation import CreateExhortationSchema, ExhortationSchema, ExhortationListSchema, UpdateExhortationSchema
-from core.schema.comment import CreateCommentSchema
-from core.utils.security import get_current_user_instance
-from core.utils.exceptions import *
+from src.models.user import User
+from src.models.exhortation import Exhortation
+from src.schema.exhortation import CreateExhortationSchema, ExhortationSchema, ExhortationListSchema, UpdateExhortationSchema
+from src.schema.comment import CreateCommentSchema
+from src.utils.security import get_current_user_instance
+from src.utils.exceptions import *
 import logging, math
 from typing import Optional
 from datetime import datetime

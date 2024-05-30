@@ -1,10 +1,10 @@
 from fastapi import APIRouter, Depends, Request
 from settings import Engine, ENV
-from core.models.user import User
-from core.models.profile import Profile
-from core.schema.user import UserSchema, UserAuthResponeSchema, UserLoginSchema, UserProfileSchema, PrivateUserProfileSchema
-from core.utils.security import  authenticate_user, create_access_token, get_current_user_instance, init_passkey_history
-from core.utils.exceptions import *
+from src.models.user import User
+from src.models.profile import Profile
+from src.schema.user import UserSchema, UserAuthResponeSchema, UserLoginSchema, UserProfileSchema, PrivateUserProfileSchema
+from src.utils.security import  authenticate_user, create_access_token, get_current_user_instance, init_passkey_history
+from src.utils.exceptions import *
 import logging
 from uuid import uuid4
 from typing import Annotated

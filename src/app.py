@@ -1,7 +1,7 @@
 from fastapi import FastAPI
-from core.routers import account
-from core.routers import exhortation
-from core.routers import comment
+from src.routers import account
+from src.routers import exhortation
+from src.routers import comment
 from starlette.middleware.cors import CORSMiddleware
 
 app = FastAPI()

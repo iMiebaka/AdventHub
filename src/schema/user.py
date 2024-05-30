@@ -3,7 +3,7 @@ from pydantic import EmailStr, SecretStr
 from odmantic import ObjectId
 from typing import Optional
 from pydantic import model_validator
-from core.utils.security import get_password_hash
+from src.utils.security import get_password_hash
 from typing_extensions import Self, List
 
 class ProfileSchema(Base):

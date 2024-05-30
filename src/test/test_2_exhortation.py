@@ -1,7 +1,7 @@
 import logging, pytest
 from .payload import test_data as TEST_DATA
 from httpx import AsyncClient, ASGITransport
-from core.app import app
+from src.app import app
 
 
 LOGGER = logging.getLogger(__name__)
@@ -124,7 +124,7 @@ async def test_3_update_exhortation(async_app_client: AsyncClient):
         }
     )
     assert response.status_code == 404
-    
+
 @pytest.mark.asyncio(scope="session")
 async def test_4_delete_exhortation(async_app_client: AsyncClient):
     access_token = TEST_DATA.read_token(0)

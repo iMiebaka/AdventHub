@@ -1,12 +1,12 @@
 import logging, pytest
 from .payload import test_data as TEST_DATA
 from httpx import AsyncClient, ASGITransport
-from core.app import app
+from src.app import app
 from uuid import uuid4 
 from bson import ObjectId
 from settings import Engine
-from core.models.comment import User
-from core.models.comment import Comment
+from src.models.comment import User
+from src.models.comment import Comment
 
 
 engine = Engine

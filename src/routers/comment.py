@@ -1,12 +1,12 @@
 from fastapi import APIRouter, Depends, Body
 from settings import Engine
 from odmantic import ObjectId
-from core.models.user import User
-from core.models.exhortation import Exhortation
-from core.models.comment import Comment
-from core.schema.comment import CreateCommentSchema, UpdateCommentSchemaLogic, CommentListSchema, CommentSchemaLogic
-from core.utils.security import get_current_user_instance
-from core.utils.exceptions import *
+from src.models.user import User
+from src.models.exhortation import Exhortation
+from src.models.comment import Comment
+from src.schema.comment import CreateCommentSchema, UpdateCommentSchemaLogic, CommentListSchema, CommentSchemaLogic
+from src.utils.security import get_current_user_instance
+from src.utils.exceptions import *
 import logging, math
 from typing import Optional
 from datetime import datetime

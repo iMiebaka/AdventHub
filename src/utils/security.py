@@ -12,7 +12,7 @@ from pydantic import BaseModel, ValidationError
 from starlette.requests import Request
 from passlib.context import CryptContext
 
-from core.models.user import User
+from src.models.user import User
 from settings import SETTINGS, Engine
 
 
@@ -139,7 +139,7 @@ async def get_current_user(
     user_instance: User = Depends(get_current_user_instance),
     token: str = Depends(OAUTH2_SCHEME),
 ):
-    from core.schema.user import UserSchema
+    from src.schema.user import UserSchema
     return UserSchema(token=token, **user_instance.model_dump())
 
 # from Crypto.Cipher import AES
