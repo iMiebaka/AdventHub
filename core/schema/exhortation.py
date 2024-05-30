@@ -25,16 +25,19 @@ class CreateExhortationSchema(Base):
 
 
 class ExhortationSchema(Base):
+    id: ObjectId
     slug: str
     media: str
     media_type: str
     author: UserDisplayProfileSchema
     edited_at: datetime 
     created_at: datetime 
+    comments: List[ObjectId]
 
 class ExhortationListSchema(Base):
     total_page: int
     page: int
+    count: int
     data: List[ExhortationSchema]
 
 

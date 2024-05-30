@@ -66,5 +66,11 @@ async def test_2_read_comment(async_app_client: AsyncClient):
         "/exhortation",
     )
     res_data = response.json()
-    LOGGER.info(res_data)
-    slug = res_data["data"][0]["slug"]
+    assert res_data["count"] == 2
+
+    exhortationId = response.json()["data"][0]["id"]
+    response = await async_app_client.get(
+        f"/comment/exhortation?exhortationId={exhortationId}",
+    )
+    assert response.status_code == 200
+    res_data = response.json()

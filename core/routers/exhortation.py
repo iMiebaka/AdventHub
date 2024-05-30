@@ -51,7 +51,7 @@ async def get(
         exhortation = await engine.find(model=Exhortation, skip=skip, limit=limit*1)
         total_page = math.ceil(count/limit) if count >= limit else 1
         data = [ExhortationSchema(**e.model_dump()) for e in exhortation]
-        return ExhortationListSchema(page=page, data=data, total_page=total_page)
+        return ExhortationListSchema(page=page, data=data, total_page=total_page, count=count)
     
 
 @router.put("", response_model=ExhortationSchema)

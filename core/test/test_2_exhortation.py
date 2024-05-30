@@ -148,7 +148,6 @@ async def test_4_delete_exhortation(async_app_client: AsyncClient):
         "/exhortation",
     )
     post = response.json()["data"]
-    LOGGER.info(post)
     assert len(post) == exhortation_length
     slug= post[2]["slug"]
 
