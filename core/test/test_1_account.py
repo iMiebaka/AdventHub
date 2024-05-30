@@ -2,14 +2,22 @@ import pytest
 from settings import Engine
 from core.models.user import User
 import logging
-from ..payload import test_data
+from .payload import test_data
+from core.app import app
+from httpx import AsyncClient, ASGITransport
 
 engine = Engine
 LOGGER = logging.getLogger(__name__)
 
+@pytest.fixture(scope="session")
+async def async_app_client():
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url='http://test') as client:
+        yield client
 
 
 """ Accounting testing """
+@pytest.mark.asyncio(scope="session")
 async def test_1_create_user(async_app_client):
     response = await async_app_client.post(
         "/account/sign-up",
@@ -20,6 +28,7 @@ async def test_1_create_user(async_app_client):
     assert user_exist.email == test_data.user_list(0)["email"]
 
 
+@pytest.mark.asyncio(scope="session")
 async def test_1_create_users_others(async_app_client):
     users: list = test_data.user_list("")
     users.pop(0)
@@ -33,6 +42,7 @@ async def test_1_create_users_others(async_app_client):
         assert user_exist.email == test_data.user_list(0)["email"]
 
 
+@pytest.mark.asyncio(scope="session")
 async def test_2_create_existing_user(async_app_client):
     response = await async_app_client.post(
         "/account/sign-up",
@@ -41,6 +51,7 @@ async def test_2_create_existing_user(async_app_client):
     assert response.json() == {"detail":"Email already exist"}
 
 
+@pytest.mark.asyncio(scope="session")
 async def test_4_login_user(async_app_client):
     user = test_data.user_list(0)
     user["password"] = "12346"
@@ -67,6 +78,7 @@ async def test_4_login_user(async_app_client):
     assert "access_token" in response.json()
 
 
+@pytest.mark.asyncio(scope="session")
 async def test_5_user_profile(async_app_client):
     user = test_data.user_list(0)
     response = await async_app_client.post(

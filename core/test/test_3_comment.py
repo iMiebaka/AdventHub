@@ -1,10 +1,21 @@
-import logging
-from ..payload import test_data
-from httpx import AsyncClient
+import logging, pytest
+from .payload import test_data
+from httpx import AsyncClient, ASGITransport
+from core.app import app
 
 
 LOGGER = logging.getLogger(__name__)
 
+
+@pytest.fixture(scope="session")
+async def async_app_client():
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url='http://test') as client:
+        yield client
+
+
+
+@pytest.mark.asyncio(scope="session")
 async def test_1_make_comment(async_app_client: AsyncClient):
 # Get post to comment ✅
     response = await async_app_client.get(
@@ -48,3 +59,12 @@ async def test_1_make_comment(async_app_client: AsyncClient):
         }
         )
     assert response.status_code == 201
+
+@pytest.mark.asyncio(scope="session")
+async def test_2_read_comment(async_app_client: AsyncClient):
+    response = await async_app_client.get(
+        "/exhortation",
+    )
+    res_data = response.json()
+    LOGGER.info(res_data)
+    slug = res_data["data"][0]["slug"]

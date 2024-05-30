@@ -1,11 +1,19 @@
-import logging
-from ..payload import test_data
-from httpx import AsyncClient
+import logging, pytest
+from .payload import test_data
+from httpx import AsyncClient, ASGITransport
+from core.app import app
 
 
 LOGGER = logging.getLogger(__name__)
 
+@pytest.fixture(scope="session")
+async def async_app_client():
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url='http://test') as client:
+        yield client
 
+
+@pytest.mark.asyncio(scope="session")
 async def test_1_create_exhortation(async_app_client: AsyncClient):
     user = test_data.user_list(0)
     response = await async_app_client.post(
@@ -34,6 +42,7 @@ async def test_1_create_exhortation(async_app_client: AsyncClient):
     assert res_data["author"]["last_name"] == user["last_name"]
 
 
+@pytest.mark.asyncio(scope="session")
 async def test_2_read_exhortation(async_app_client: AsyncClient):
 # Getting all post ✅
     response = await async_app_client.get(
@@ -54,6 +63,7 @@ async def test_2_read_exhortation(async_app_client: AsyncClient):
     assert response.status_code == 404
 
 
+@pytest.mark.asyncio(scope="session")
 async def test_3_update_exhortation(async_app_client: AsyncClient):
     user = test_data.user_list(0)
     response = await async_app_client.post(
@@ -105,6 +115,7 @@ async def test_3_update_exhortation(async_app_client: AsyncClient):
     
 
 
+@pytest.mark.asyncio(scope="session")
 async def test_4_delete_exhortation(async_app_client: AsyncClient):
     user = test_data.user_list(0)
     response = await async_app_client.post(
@@ -112,6 +123,19 @@ async def test_4_delete_exhortation(async_app_client: AsyncClient):
             json=user,
         )
     access_token = response.json()["access_token"]
+
+    # Create post
+    for index in range(2):
+        post  = test_data.exhortation_list["textBase"][index + 1]
+        response = await async_app_client.post(
+            "/exhortation",
+            json=post,
+            headers={
+                "Authorization": f"Bearer {access_token}"
+            }
+        )
+        assert response.status_code == 200
+    
     response = await async_app_client.get(
         "/account/profile",
         headers={
@@ -124,6 +148,7 @@ async def test_4_delete_exhortation(async_app_client: AsyncClient):
         "/exhortation",
     )
     post = response.json()["data"]
+    LOGGER.info(post)
     assert len(post) == exhortation_length
     slug= post[2]["slug"]
 
