@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, Request
 from settings import Engine, ENV
 from core.models.user import User
 from core.models.profile import Profile
-from core.schema.user import UserSchema, UserAuthResponeSchema, UserLoginSchema, UserProfileSchema
+from core.schema.user import UserSchema, UserAuthResponeSchema, UserLoginSchema, UserProfileSchema, PrivateUserProfileSchema
 from core.utils.security import  authenticate_user, create_access_token, get_current_user_instance, init_passkey_history
 from core.utils.exceptions import *
 import logging
@@ -18,7 +18,7 @@ router = APIRouter(
 )
 
 
-@router.get("/profile", response_model=UserProfileSchema)
+@router.get("/profile", response_model=PrivateUserProfileSchema)
 async def profile(
     current_user: User = Depends(get_current_user_instance)
 ):
@@ -26,6 +26,7 @@ async def profile(
     if user is None:
         raise HTTPException(404)
     return user
+
 
 @router.post("/sign-up", response_model=UserProfileSchema)
 async def sign_up(user: UserSchema):
@@ -52,6 +53,7 @@ async def login_user(
 
     token = create_access_token(user)
     return UserAuthResponeSchema(access_token=token, token_type="bearer")
+
 
 @router.post("/oauth", response_model=UserAuthResponeSchema)
 async def login_user(

@@ -86,5 +86,7 @@ async def delete(
             raise HTTPException(404, detail="We could not find this Exhortation")
     if exhortation.author.id != current_user.id:
         raise HTTPException(401, detail="We could not find this Exhortation")
+    current_user.exhortation.remove(exhortation.id)
     await engine.delete(exhortation)
+    await engine.save(current_user)
     return {"message": "Exhortation deleted"}

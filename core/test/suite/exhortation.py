@@ -112,12 +112,19 @@ async def test_4_delete_exhortation(async_app_client: AsyncClient):
             json=user,
         )
     access_token = response.json()["access_token"]
-
+    response = await async_app_client.get(
+        "/account/profile",
+        headers={
+            "Authorization": f"Bearer {access_token}"
+        }
+    )
+    res_data = response.json()
+    exhortation_length = len(res_data["exhortation"])
     response = await async_app_client.get(
         "/exhortation",
     )
     post = response.json()["data"]
-    assert len(post) == 3
+    assert len(post) == exhortation_length
     slug= post[2]["slug"]
 
     # Attempting unauthorized access ❌
@@ -134,7 +141,7 @@ async def test_4_delete_exhortation(async_app_client: AsyncClient):
         }
     )
     assert response.status_code == 404
-    
+        
     # Attempt with correct data ✅
     response = await async_app_client.delete(
         f"/exhortation?slug={slug}",
@@ -143,3 +150,12 @@ async def test_4_delete_exhortation(async_app_client: AsyncClient):
         }
     )
     assert response.status_code == 204
+
+    response = await async_app_client.get(
+        "/account/profile",
+        headers={
+            "Authorization": f"Bearer {access_token}"
+        }
+    )
+    res_data = response.json()
+    assert len(res_data["exhortation"]) == exhortation_length -1

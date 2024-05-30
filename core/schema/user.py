@@ -4,8 +4,7 @@ from odmantic import ObjectId
 from typing import Optional
 from pydantic import model_validator
 from core.utils.security import get_password_hash
-from typing_extensions import Self
-
+from typing_extensions import Self, List
 
 class ProfileSchema(Base):
     postion: Optional[str] = None
@@ -14,6 +13,14 @@ class ProfileSchema(Base):
     cover_picture: Optional[str] = None
     about_me: Optional[str] = None
     
+class PrivateUserProfileSchema(Base):
+    id: ObjectId
+    first_name: str
+    last_name: str
+    email: str
+    exhortation: List[ObjectId] # Done to control circular import
+    profile: ProfileSchema
+
 class UserProfileSchema(Base):
     id: ObjectId
     first_name: str
