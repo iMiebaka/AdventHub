@@ -3,14 +3,13 @@ from odmantic import ObjectId
 from pydantic import model_validator
 import random, random, string
 from typing_extensions import Self, Optional, List
-from .user import UserProfileSchema
+from .user import UserDisplayProfileSchema
 from datetime import datetime
-from core.models.exhortation import Exhortation
+
 
 def generate_alphanumeric(length):
     characters = string.ascii_letters + string.digits
     return ''.join(random.choice(characters) for _ in range(length))
-
 
 
 
@@ -29,7 +28,7 @@ class ExhortationSchema(Base):
     slug: str
     media: str
     media_type: str
-    author: UserProfileSchema
+    author: UserDisplayProfileSchema
     edited_at: datetime 
     created_at: datetime 
 

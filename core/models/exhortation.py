@@ -1,6 +1,7 @@
-from odmantic import Model, Field, Index, Reference
+from odmantic import Model, Field, Index, Reference, ObjectId
 from datetime import datetime
 from .user import User
+from typing import List
 
 class Exhortation(Model):
     slug: str
@@ -10,6 +11,7 @@ class Exhortation(Model):
     edited_at: datetime = Field(default_factory=datetime.utcnow)
     created_at: datetime = Field(default_factory=datetime.utcnow)
     author: User = Reference()
+    comments: List[ObjectId] = []
 
     model_config = {
         "indexes": lambda: [

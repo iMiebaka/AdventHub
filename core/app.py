@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from core.routers import account
 from core.routers import exhortation
+from core.routers import comment
 from starlette.middleware.cors import CORSMiddleware
 
 app = FastAPI()
@@ -20,3 +21,4 @@ async def root():
 
 app.include_router(account.router)
 app.include_router(exhortation.router)
+app.include_router(comment.router)

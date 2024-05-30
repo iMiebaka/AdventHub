@@ -6,7 +6,7 @@ from core.app import app
 import logging, asyncio, base64
 from fastapi.testclient import TestClient
 from .payload import test_data
-from . import exhortation 
+from .suite import exhortation, comment 
 
 client = TestClient(app)
 engine = Engine
@@ -121,3 +121,9 @@ async def test_4_delete_exhortation(async_app_client):
     await exhortation.test_1_create_exhortation(async_app_client)
     await exhortation.test_4_delete_exhortation(async_app_client)
 
+
+
+""" Exhortation comment """
+@pytest.mark.asyncio
+async def test_1_make_comment(async_app_client):
+    await comment.test_1_make_comment(async_app_client)
