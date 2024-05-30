@@ -1,8 +1,9 @@
-from fastapi import APIRouter, Depends, Body
+from fastapi import APIRouter, Depends
 from settings import Engine
 from core.models.user import User
 from core.models.exhortation import Exhortation
 from core.schema.exhortation import CreateExhortationSchema, ExhortationSchema, ExhortationListSchema, UpdateExhortationSchema
+from core.schema.comment import CreateCommentSchema
 from core.utils.security import get_current_user_instance
 from core.utils.exceptions import *
 import logging, math
@@ -24,10 +25,13 @@ async def create(
     exhortation: CreateExhortationSchema,
     current_user: User = Depends(get_current_user_instance)
 ):
-    exhortation = Exhortation(**exhortation.model_dump(), author=current_user)
-    current_user.exhortation.append(exhortation.id)
-    await engine.save_all([exhortation, current_user])
-    return exhortation
+    try:
+        exhortation = Exhortation(**exhortation.model_dump(), author=current_user)
+        current_user.exhortation.append(exhortation.id)
+        await engine.save_all([exhortation, current_user])
+        return exhortation
+    except Exception as ex:
+        raise HTTPException(400, detail=str(ex))
 
 
 @router.get("")
@@ -56,22 +60,25 @@ async def update(
     patch: UpdateExhortationSchema,
     current_user: User = Depends(get_current_user_instance)
 ):
-    result = await engine.find_one(Exhortation, Exhortation.slug == slug)
-    if result is None:
-            raise HTTPException(404, detail="We could not find this Exhortation")
-    if result.author.id != current_user.id:
-        raise HTTPException(401, detail="We could not find this Exhortation")
-    result.model_update(patch)
-    result.edited = True
-    result.edited_at = datetime.utcnow()
-    
-    await engine.save(result)
-    return result
+    try:
+        result = await engine.find_one(Exhortation, Exhortation.slug == slug)
+        if result is None:
+                raise HTTPException(404, detail="We could not find this Exhortation")
+        if result.author.id != current_user.id:
+            raise HTTPException(401, detail="We could not find this Exhortation")
+        result.model_update(patch)
+        result.edited = True
+        result.edited_at = datetime.utcnow()
+        
+        await engine.save(result)
+        return result
+    except Exception as ex:
+        raise HTTPException(400, detail=str(ex))
 
 
 @router.delete("", status_code=204)
 async def delete(
-    slug: Optional[str] = None,
+    slug: str,
     current_user: User = Depends(get_current_user_instance)
 ):
     exhortation = await engine.find_one(Exhortation, Exhortation.slug == slug)
