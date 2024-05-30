@@ -16,13 +16,7 @@ async def async_app_client():
 @pytest.mark.asyncio(scope="session")
 async def test_1_create_exhortation(async_app_client: AsyncClient):
     user = TEST_DATA.user_list(0)
-    response = await async_app_client.post(
-            "/account/login",
-            json=user,
-        )
-    assert response.status_code == 200
-    assert "access_token" in response.json()
-    access_token = response.json()["access_token"]
+    access_token = TEST_DATA.read_token(0)
 
 
     post = TEST_DATA.exhortation_list["textBase"][0]
@@ -65,13 +59,8 @@ async def test_2_read_exhortation(async_app_client: AsyncClient):
 
 @pytest.mark.asyncio(scope="session")
 async def test_3_update_exhortation(async_app_client: AsyncClient):
-    user = TEST_DATA.user_list(0)
-    response = await async_app_client.post(
-            "/account/login",
-            json=user,
-        )
-    access_token = response.json()["access_token"]
 
+    access_token = TEST_DATA.read_token(0)
     response = await async_app_client.get(
         "/exhortation",
     )
@@ -117,12 +106,7 @@ async def test_3_update_exhortation(async_app_client: AsyncClient):
 
 @pytest.mark.asyncio(scope="session")
 async def test_4_delete_exhortation(async_app_client: AsyncClient):
-    user = TEST_DATA.user_list(0)
-    response = await async_app_client.post(
-            "/account/login",
-            json=user,
-        )
-    access_token = response.json()["access_token"]
+    access_token = TEST_DATA.read_token(0)
 
     # Create post
     for index in range(2):
