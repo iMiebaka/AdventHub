@@ -30,7 +30,8 @@ async def test_1_create_exhortation(async_app_client: AsyncClient):
 
     assert res_data["media"] == post["media"]
     assert res_data["media_type"] == post["media_type"]
-    assert res_data["author"]["email"] == user["email"]
+    assert res_data["author"]["first_name"] == user["first_name"]
+    assert res_data["author"]["last_name"] == user["last_name"]
 
 
 async def test_2_read_exhortation(async_app_client: AsyncClient):

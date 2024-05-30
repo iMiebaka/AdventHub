@@ -21,6 +21,15 @@ class UserProfileSchema(Base):
     email: str
     profile: ProfileSchema
 
+class ProfileDisplaySchema(Base):
+    postion: Optional[str] = None
+    profile_picture: Optional[str] = None
+
+class UserDisplayProfileSchema(Base):
+    id: ObjectId
+    first_name: str
+    last_name: str
+    profile: ProfileDisplaySchema
 
 class UserSchema(Base):
     first_name: str
