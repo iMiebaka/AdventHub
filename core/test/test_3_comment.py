@@ -245,3 +245,76 @@ async def test_3_update_comment(async_app_client: AsyncClient):
         }
     )
     assert response.status_code == 404
+
+
+@pytest.mark.asyncio(scope="session")
+async def test_4_delete_comment(async_app_client: AsyncClient):
+    comments = await engine.find(model=Comment)
+    comment_length = len(comments)
+    assert type(comment_length) == int
+
+    comment = comments[0]
+    id = comment.id
+    access_tokens = TEST_DATA.read_token("")
+    access_token = access_tokens[0]
+    
+    # delete post ✅
+    response = await async_app_client.delete(
+        f"/comment/exhortation?id={id}",
+        headers={
+            "Authorization": f"Bearer {access_token}"
+        }
+    )
+    assert response.status_code == 204
+
+    comments = await engine.find(model=Comment)
+    assert comment_length - 1 == len(comments)
+
+    # delete post with a wrong id ❌
+    response = await async_app_client.delete(
+        f"/comment/exhortation?id={ObjectId()}",
+        headers={
+            "Authorization": f"Bearer {access_token}"
+        }
+    )
+    assert response.status_code == 404
+
+    # delete post via wrong user ❌
+    access_token = access_tokens[1]
+    id = comments[1].id
+    response = await async_app_client.delete(
+        f"/comment/exhortation?id={id}",
+        headers={
+            "Authorization": f"Bearer {access_token}"
+        }
+    )
+    assert response.status_code == 401
+
+    access_token = access_tokens[2]
+    response = await async_app_client.delete(
+        f"/comment/exhortation?id={id}",
+        headers={
+            "Authorization": f"Bearer {access_token}"
+        }
+    )
+    assert response.status_code == 401
+    
+    access_token = access_tokens[3]
+    response = await async_app_client.delete(
+        f"/comment/exhortation?id={id}",
+        headers={
+            "Authorization": f"Bearer {access_token}"
+        }
+    )
+    assert response.status_code == 401
+
+    
+    response = await async_app_client.delete(
+        f"/comment/exhortation?id={id}",
+        headers={
+            "Authorization": f"Bearer {access_tokens[0]}"
+        }
+    )
+    assert response.status_code == 204
+    comments = await engine.find(model=Comment)
+    assert comment_length - 2 == len(comments)

@@ -80,3 +80,22 @@ async def update(
     except Exception as ex:
         raise HTTPException(400, detail=str(ex))
 
+
+@router.delete("/exhortation", status_code=204)
+async def delete(
+    id: ObjectId,
+    current_user: User = Depends(get_current_user_instance)
+):
+    result = await engine.find_one(Comment, Comment.id == id)
+    if result is None:
+            raise HTTPException(404, detail="We could not find this Comment")
+    if result.author.id != current_user.id:
+        raise HTTPException(401, detail="We could not find this Comment")
+    try:
+        exhortation:Exhortation = result.exhortation
+        exhortation.comments.remove(result.id)
+        await engine.delete(result)
+        await engine.save(exhortation)
+        return {"message": "Comment deleted"}
+    except Exception as ex:
+        raise HTTPException(400, detail=str(ex))
