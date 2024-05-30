@@ -6,6 +6,7 @@ from core.schema.user import UserSchema, UserAuthResponeSchema, UserLoginSchema,
 from core.utils.security import  authenticate_user, create_access_token, get_current_user_instance, init_passkey_history
 from core.utils.exceptions import *
 import logging
+from uuid import uuid4
 from typing import Annotated
 from fastapi.security import OAuth2PasswordRequestForm
 
@@ -36,7 +37,7 @@ async def sign_up(user: UserSchema):
     profile= Profile(
         profile_picture = f"https://ui-avatars.com/api/?name={user.first_name[0]+user.last_name}",
         pass_history=init_passkey_history(user.password))
-    user = User(**user.model_dump(), profile=profile)
+    user = User(**user.model_dump(), profile=profile, public_id=uuid4().hex)
     await engine.save(user)
     return user
 

@@ -5,10 +5,10 @@ import logging
 from .payload import test_data as TEST_DATA
 from core.app import app
 from httpx import AsyncClient, ASGITransport
-from core.utils.security import create_access_token
+from core.utils.security import create_access_token, get_current_user_instance
 from core.models.user import User
 from settings import Engine
-
+from time import sleep
 
 
 engine = Engine
@@ -58,7 +58,7 @@ async def test_2_create_existing_user(async_app_client):
 
 
 @pytest.mark.asyncio(scope="session")
-async def test_3_create_token():
+async def test_3A_create_token():
     # Generate tokens ✅
     access_tokens = []
     users = await engine.find(User)
@@ -70,6 +70,18 @@ async def test_3_create_token():
     assert type(TEST_DATA.read_token(0)) == str
     assert type(TEST_DATA.read_token("")) == list
 
+@pytest.mark.asyncio(scope="session")
+async def test_3B_test_token():
+    # Run checks for generated tokens 🔑
+    access_tokens = TEST_DATA.read_token("")
+    users = await engine.find(User)
+    assert len(users) == len(access_tokens)
+
+    for iter, user in enumerate(users):
+        access_token = access_tokens[iter]
+        user_init = await get_current_user_instance(access_token)
+        assert user.id == user_init.id
+        
 
 @pytest.mark.asyncio(scope="session")
 async def test_4_login_user(async_app_client):

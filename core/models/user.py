@@ -11,7 +11,7 @@ class User(Model):
     last_name: str
     email: str = Field(unique=True)
     password: str
-    public_id: str = uuid4().hex
+    public_id: str = Field(unique=True)
     created_at: datetime = Field(default_factory=datetime.utcnow)
     profile: Profile = Reference()
     exhortation: List[ObjectId] = []
