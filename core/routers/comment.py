@@ -37,7 +37,7 @@ async def create_exhortation_comment(
             comment = Comment(**body.model_dump(), author=current_user, exhortation=exhortation)
             exhortation.comments.append(comment.id)
             await engine.save_all([comment, current_user])
-            return CommentSchema(body=comment.body, author=current_user.model_dump())
+            return CommentSchemaLogic(**comment.model_dump())
     except Exception as ex:
         raise HTTPException(400, detail=str(ex))
 
@@ -50,12 +50,12 @@ async def get(
 ):  
     skip = (page - 1) * limit
     query=Comment.exhortation == exhortationId
-    comments = await engine.find(Comment, query, skip=skip, limit=limit*1)
-    count = await engine.count(model=Comment)
+    comments = await engine.find(Comment, query, skip=skip, limit=limit)
+    count = await engine.count(Comment, query)
     total_page = math.ceil(count/limit) if count >= limit else 1
     data = [CommentSchemaLogic(**e.model_dump()) for e in comments]
     if len(data) == 0:
-        return CommentListSchema(page=1, data=data, total_page=0, count=0)
+        return CommentListSchema(page=1, data=data, totalPage=0, count=0)
 
-    return CommentListSchema(page=page, data=data, total_page=total_page, count=count)
+    return CommentListSchema(page=page, data=data, totalPage=total_page, count=count)
     

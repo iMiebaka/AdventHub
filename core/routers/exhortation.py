@@ -48,7 +48,7 @@ async def get(
     else:
         count = await engine.count(model=Exhortation)
         skip = (page - 1) * limit
-        exhortation = await engine.find(model=Exhortation, skip=skip, limit=limit*1)
+        exhortation = await engine.find(model=Exhortation, skip=skip, limit=limit)
         total_page = math.ceil(count/limit) if count >= limit else 1
         data = [ExhortationSchema(**e.model_dump()) for e in exhortation]
         return ExhortationListSchema(page=page, data=data, total_page=total_page, count=count)
