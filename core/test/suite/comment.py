@@ -40,7 +40,6 @@ async def test_1_make_comment(async_app_client: AsyncClient):
 
 # Post a comment ✅
     comment["slug"] = slug
-    LOGGER.info(comment)
     response = await async_app_client.post(
             "/comment/exhortation",
             json=comment,
@@ -48,5 +47,4 @@ async def test_1_make_comment(async_app_client: AsyncClient):
             "Authorization": f"Bearer {access_token}"
         }
         )
-    LOGGER.info(response.json())
     assert response.status_code == 201
