@@ -33,6 +33,7 @@ class ExhortationSchema(Base):
     edited_at: datetime 
     created_at: datetime 
     comments: List[ObjectId]
+    reaction: List[ObjectId]
 
 class ExhortationListSchema(Base):
     total_page: int

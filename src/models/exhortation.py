@@ -12,6 +12,7 @@ class Exhortation(Model):
     created_at: datetime = Field(default_factory=datetime.utcnow)
     author: User = Reference()
     comments: List[ObjectId] = []
+    reaction: List[ObjectId] = []
 
     model_config = {
         "indexes": lambda: [
