@@ -5,4 +5,4 @@ __pycache__
 # Files
 playground.py
 .env
-core/test/asset/auth.json
+src/test/asset/auth.json
