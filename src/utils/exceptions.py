@@ -6,10 +6,10 @@ class UserNotFoundException(HTTPException):
         super().__init__(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
 
 
-class ArticleNotFoundException(HTTPException):
+class ExhortationNotFoundException(HTTPException):
     def __init__(self) -> None:
         super().__init__(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Article not found"
+            status_code=status.HTTP_404_NOT_FOUND, detail="Exhortation not found"
         )
 
 
