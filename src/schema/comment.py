@@ -10,7 +10,7 @@ class CommentSchemaLogic(Base):
     body: str
     edited: bool
     author: UserDisplayProfileSchema
-    reaction: List[str]
+    reaction: List[ObjectId]
     edited_at: datetime
     created_at: datetime
 
