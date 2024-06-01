@@ -23,7 +23,7 @@ class CommentNotFoundException(HTTPException):
 class CommentAuthorNotFoundException(HTTPException):
     def __init__(self) -> None:
         super().__init__(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Comment author not found"
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Comment author not found"
         )
 
 
