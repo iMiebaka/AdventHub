@@ -5,10 +5,9 @@ from src.models.user import User
 from src.models.exhortation import Exhortation
 from src.models.comment import Comment
 from src.schema.comment import CreateCommentSchema, UpdateCommentSchemaLogic, CommentListSchema, CommentSchemaLogic
-from src.utils.security import get_current_user_instance
 from src.utils.exceptions import *
 import logging, math
-from typing import Optional
+from typing import Optional, List
 from datetime import datetime
 
 LOGGER = logging.getLogger(__name__)
@@ -26,7 +25,7 @@ async def create_exhortation_comment(
             raise ExhortationNotFoundException()
         if reply:
             pass
-
+            
         else:
             comment = Comment(**body.model_dump(), author=user, exhortation=exhortation)
             exhortation.comments.append(comment.id)
@@ -36,17 +35,32 @@ async def create_exhortation_comment(
         raise HTTPException(400, detail=str(ex))
 
 
+def comment_list(user:User, comments: List[Comment]) -> List[Comment]:
+    payload = []
+    for comment in comments:
+        comment_data = comment.model_dump()
+
+        if user and user.id in comment.reaction:
+            print(comment_data)
+            comment_data["liked"] = True
+        payload.append(CommentSchemaLogic(**comment_data))
+    return payload
+
+
 async def get(
     exhortationId: ObjectId,
     page: Optional[int],
     limit: Optional[int],
+    user: User
 ):  
     skip = (page - 1) * limit
     query=Comment.exhortation == exhortationId
     comments = await engine.find(Comment, query, skip=skip, limit=limit)
     count = await engine.count(Comment, query)
     total_page = math.ceil(count/limit) if count >= limit else 1
-    data = [CommentSchemaLogic(**e.model_dump()) for e in comments]
+    data = comment_list(user=user, comments=comments)
+    # LOGGER.info(d)
+    # data = [CommentSchemaLogic(**e.model_dump()) for e in comments]
     if len(data) == 0:
         return CommentListSchema(page=1, data=data, totalPage=0, count=0)
 
@@ -56,7 +70,7 @@ async def get(
 async def update(
     id: ObjectId,
     patch: UpdateCommentSchemaLogic,
-    user: User = Depends(get_current_user_instance)
+    user: User
 ):
     result = await engine.find_one(Comment, Comment.id == id)
     if result is None:

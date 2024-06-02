@@ -1,7 +1,7 @@
 from odmantic import Model, Field, Index, Reference, ObjectId
 from datetime import datetime
 from .user import User
-from typing import List
+from typing import List, Optional
 
 class Exhortation(Model):
     slug: str

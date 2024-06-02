@@ -3,7 +3,7 @@ from settings import Engine
 from odmantic import ObjectId
 from src.models.user import User
 from src.schema.comment import CreateCommentSchema, UpdateCommentSchemaLogic, CommentSchemaLogic
-from src.utils.security import get_current_user_instance
+from src.utils.security import get_current_user_instance, get_current_user_optional_instance
 from src.core import comment
 from typing import Optional
 
@@ -29,8 +29,9 @@ async def get(
     exhortationId: ObjectId,
     page: Optional[int] = 1,
     limit: Optional[int] = 20,
+    user: User = Depends(get_current_user_optional_instance)
 ):  
-    return await comment.get(exhortationId=exhortationId, page=page, limit=limit)
+    return await comment.get(exhortationId=exhortationId, page=page, limit=limit, user=user)
 
 
 @router.put("/exhortation", response_model=CommentSchemaLogic)

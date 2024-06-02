@@ -87,6 +87,24 @@ async def test_1_reaction_exhortation(async_app_client: AsyncClient):
     )
     assert response.json() == {'count': 1, 'reacted': True}
 
+# Show post you liked when not loggedin ❌
+    response = await async_app_client.get(
+        "/exhortation",
+    )
+    res_data = response.json()
+    # LOGGER.info(res_data)
+    assert res_data["data"][0]["liked"] == False
+
+# Show post you liked when not loggedin ✅
+    response = await async_app_client.get(
+        "/exhortation",
+        headers={
+            "Authorization": f"Bearer {access_token}"
+        }
+    )
+    res_data = response.json()
+    assert res_data["data"][0]["liked"] == True
+
 
 @pytest.mark.asyncio(scope="session")
 async def test_2_reaction_comment(async_app_client: AsyncClient):
@@ -138,12 +156,15 @@ async def test_2_reaction_comment(async_app_client: AsyncClient):
     _res_data = response.json()
     assert _res_data == {'count': 2, 'reacted': True}
     total_length = _res_data["count"]
-
+    
+    exhortationId = comments[0].exhortation.id
     response = await async_app_client.get(
-        f"/comment/exhortation?exhortationId={comments[0].exhortation.id}",
+        f"/comment/exhortation?exhortationId={exhortationId}",
     )
-    assert len(response.json()["data"][0]["reaction"]) == total_length
+    res_data = response.json()
+    assert len(res_data["data"][0]["reaction"]) == total_length
 
+    access_token = access_tokens[0]
     commentId = str(comments[1].id)
     response = await async_app_client.get(
         "/reaction/comment?id=" + commentId,
@@ -152,3 +173,14 @@ async def test_2_reaction_comment(async_app_client: AsyncClient):
         }
     )
     assert response.json() == {'count': 1, 'reacted': True}
+
+# Check for liked
+    response = await async_app_client.get(
+        f"/comment/exhortation?exhortationId={exhortationId}",
+          headers={
+            "Authorization": f"Bearer {access_token}"
+        }
+    )
+    assert response.status_code == 200
+    res_data = response.json()
+    assert res_data["data"][0]["liked"] == True

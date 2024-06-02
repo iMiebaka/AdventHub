@@ -1,8 +1,9 @@
 from datetime import datetime
-from pydantic import field_serializer
-from odmantic.bson import BSON_TYPES_ENCODERS, BaseBSONModel, ObjectId
+from pydantic import BaseModel
+from odmantic.bson import BSON_TYPES_ENCODERS, BaseBSONModel
 
 
-class Base(BaseBSONModel):
+
+class Base(BaseModel):
 
     pass

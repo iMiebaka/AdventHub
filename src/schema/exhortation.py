@@ -29,6 +29,7 @@ class ExhortationSchema(Base):
     slug: str
     media: str
     media_type: str
+    liked: Optional[bool] = False
     author: UserDisplayProfileSchema
     edited_at: datetime 
     created_at: datetime 

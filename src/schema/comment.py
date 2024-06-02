@@ -3,12 +3,13 @@ from typing_extensions import List
 from .user import UserDisplayProfileSchema
 from datetime import datetime
 from odmantic import ObjectId
-
+from typing import Optional
 
 class CommentSchemaLogic(Base):
     id: ObjectId
     body: str
     edited: bool
+    liked: Optional[bool] = False
     author: UserDisplayProfileSchema
     reaction: List[ObjectId]
     edited_at: datetime
