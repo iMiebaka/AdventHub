@@ -20,12 +20,14 @@ class PrivateUserProfileSchema(Base):
     email: str
     exhortation: List[ObjectId] # Done to control circular import
     profile: ProfileSchema
+    username: str
 
 class UserProfileSchema(Base):
     id: ObjectId
     first_name: str
     last_name: str
     email: str
+    username: str
     profile: ProfileSchema
 
 class ProfileDisplaySchema(Base):
