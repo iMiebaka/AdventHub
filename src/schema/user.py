@@ -22,6 +22,14 @@ class PrivateUserProfileSchema(Base):
     profile: ProfileSchema
     username: str
 
+class UpdateUserProfileSchema(Base):
+    first_name: str
+    last_name: str
+    email: str
+    profile: ProfileSchema
+    username: str
+
+
 class UserProfileSchema(Base):
     id: ObjectId
     first_name: str

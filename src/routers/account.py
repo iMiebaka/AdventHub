@@ -2,17 +2,13 @@ from fastapi import APIRouter, Depends, Request
 from settings import Engine, ENV
 from src.models.user import User
 from src.models.profile import Profile
-from src.schema.user import UserSchema, UserAuthResponeSchema, UserLoginSchema, UserProfileSchema, PrivateUserProfileSchema
-from src.utils.security import  authenticate_user, create_access_token, get_current_user_instance, init_passkey_history
+from src.schema.user import UserSchema, UserAuthResponeSchema, UserLoginSchema, UserProfileSchema, PrivateUserProfileSchema, UpdateUserProfileSchema
+from src.utils.security import  get_current_user_instance
 from src.utils.exceptions import *
 from src.core import account
-import logging, random
-from uuid import uuid4
 from typing import Annotated
 from fastapi.security import OAuth2PasswordRequestForm
 
-LOGGER = logging.getLogger(__name__)
-engine = Engine
 router = APIRouter(
     prefix="/account",
     tags=["account"],
@@ -25,6 +21,14 @@ async def profile(
     current_user: User = Depends(get_current_user_instance)
 ):
     return await account.profile(user=current_user)
+
+
+@router.put("/profile", response_model=PrivateUserProfileSchema)
+async def update_profile(
+    payload: UpdateUserProfileSchema,
+    current_user: User = Depends(get_current_user_instance)
+):
+    return await account.update_profile(payload=payload, user=current_user)
 
 
 @router.post("/sign-up", response_model=UserProfileSchema)

@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, Request
 from settings import Engine, ENV
 from src.models.user import User
 from src.models.profile import Profile
-from src.schema.user import UserSchema, UserAuthResponeSchema, UserLoginSchema, UserProfileSchema, PrivateUserProfileSchema
+from src.schema.user import UserSchema, UserAuthResponeSchema, UserLoginSchema, UpdateUserProfileSchema
 from src.utils.security import  authenticate_user, create_access_token, get_current_user_instance, init_passkey_history
 from src.utils.exceptions import *
 import logging, random
@@ -23,6 +23,15 @@ async def profile(
     return user
 
 
+async def update_profile(
+    payload: UpdateUserProfileSchema,
+    user: User = Depends(get_current_user_instance)
+):
+    user.model_update(payload)
+    await engine.save(user)
+    return user
+
+
 async def generate_username(first_name: str, last_name: str) -> str:
     user_name = ""
     user_name = f"{first_name.lower()}.{last_name.lower()}"
@@ -38,7 +47,8 @@ async def sign_up(user: UserSchema):
         raise HTTPException(400, detail="Email already exist")
     profile= Profile(
         profile_picture = f"https://ui-avatars.com/api/?name={user.first_name[0]+user.last_name}",
-        pass_history=init_passkey_history(user.password))
+        pass_history=init_passkey_history(user.password)
+    )
     username = await generate_username(first_name=user.first_name, last_name=user.last_name)
     user = User(**user.model_dump(), profile=profile, public_id=uuid4().hex, username=username)
     await engine.save(user)

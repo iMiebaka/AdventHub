@@ -92,10 +92,9 @@ async def test_1_reaction_exhortation(async_app_client: AsyncClient):
         "/exhortation",
     )
     res_data = response.json()
-    # LOGGER.info(res_data)
     assert res_data["data"][0]["liked"] == False
 
-# Show post you liked when not loggedin ✅
+# Show post you liked when loggedin ✅
     response = await async_app_client.get(
         "/exhortation",
         headers={

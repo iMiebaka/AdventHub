@@ -8,8 +8,6 @@ from httpx import AsyncClient, ASGITransport
 from src.utils.security import create_access_token, get_current_user_instance
 from src.models.user import User
 from settings import Engine
-from time import sleep
-
 
 engine = Engine
 LOGGER = logging.getLogger(__name__)
@@ -23,7 +21,7 @@ async def async_app_client():
 
 """ Accounting testing """
 @pytest.mark.asyncio(scope="session")
-async def test_1A_create_user(async_app_client):
+async def test_1A_create_user(async_app_client: AsyncClient):
     response = await async_app_client.post(
         "/account/sign-up",
         json=TEST_DATA.user_list(0),
@@ -34,7 +32,7 @@ async def test_1A_create_user(async_app_client):
 
 
 @pytest.mark.asyncio(scope="session")
-async def test_1B_create_users_others(async_app_client):
+async def test_1B_create_users_others(async_app_client: AsyncClient):
     users: list = TEST_DATA.user_list("")
     users.pop(0)
     for iter, user in enumerate(users):
@@ -48,7 +46,7 @@ async def test_1B_create_users_others(async_app_client):
 
 
 @pytest.mark.asyncio(scope="session")
-async def test_2_create_existing_user(async_app_client):
+async def test_2_create_existing_user(async_app_client: AsyncClient):
     response = await async_app_client.post(
         "/account/sign-up",
         json=TEST_DATA.user_list(0),
@@ -70,6 +68,7 @@ async def test_3A_create_token():
     assert type(TEST_DATA.read_token(0)) == str
     assert type(TEST_DATA.read_token("")) == list
 
+
 @pytest.mark.asyncio(scope="session")
 async def test_3B_test_token():
     # Run checks for generated tokens 🔑
@@ -84,7 +83,7 @@ async def test_3B_test_token():
         
 
 @pytest.mark.asyncio(scope="session")
-async def test_4_login_user(async_app_client):
+async def test_4_login_user(async_app_client: AsyncClient):
     user = TEST_DATA.user_list(0)
     user["password"] = "12346"
     response = await async_app_client.post(
@@ -111,7 +110,7 @@ async def test_4_login_user(async_app_client):
 
 
 @pytest.mark.asyncio(scope="session")
-async def test_5_user_profile(async_app_client):
+async def test_5_user_profile(async_app_client: AsyncClient):
     user = TEST_DATA.user_list(0)
     response = await async_app_client.post(
         "/account/login",
@@ -131,3 +130,38 @@ async def test_5_user_profile(async_app_client):
     assert res_data["first_name"] == user["first_name"]
     assert res_data["last_name"] == user["last_name"]
 
+
+@pytest.mark.asyncio(scope="session")
+async def test_6_update_profile(async_app_client: AsyncClient):
+    user = TEST_DATA.user_list(0)
+    access_token:str = TEST_DATA.read_token(0)
+
+    response = await async_app_client.get(
+        "/account/profile",
+        headers={
+            "Authorization": f"Bearer {access_token}"
+        }
+    )
+    res_data = response.json()
+    res_data["profile"]["cover_picture"] = "https://www.thespruce.com/thmb/zXQvC3RGBgZOFmnfsjlnSVl81eo=/5616x3744/filters:no_upscale():max_bytes(150000):strip_icc()/old-white-church-157610088-6f1735caa5054ff79fa44217005706fb.jpg"
+    assert response.status_code == 200
+   
+    response = await async_app_client.put(
+        "/account/profile",
+        headers={
+            "Authorization": f"Bearer {access_token}"
+        },
+        json=res_data
+    )
+    res_data = response.json()
+    assert res_data["profile"]["cover_picture"] != None
+
+    response = await async_app_client.get(
+        "/account/profile",
+        headers={
+            "Authorization": f"Bearer {access_token}"
+        }
+    )
+    res_data = response.json()
+    LOGGER.info(res_data["profile"])
+    assert res_data["profile"]["cover_picture"] != None
