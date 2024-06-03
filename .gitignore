@@ -6,3 +6,4 @@ __pycache__
 playground.py
 .env
 src/test/asset/auth.json
+media

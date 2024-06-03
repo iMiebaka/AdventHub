@@ -1,8 +1,8 @@
-from fastapi import APIRouter, Depends, Request
-from settings import Engine, ENV
+from fastapi import APIRouter, Depends, UploadFile, File
 from src.models.user import User
-from src.models.profile import Profile
-from src.schema.user import UserSchema, UserAuthResponeSchema, UserLoginSchema, UserProfileSchema, PrivateUserProfileSchema, UpdateUserProfileSchema, SearchUserProfileSchema
+from src.schema.user import UserSchema, UserAuthResponeSchema, UserLoginSchema,\
+     UserProfileSchema, PrivateUserProfileSchema, UpdateUserProfileSchema,\
+          SearchUserProfileSchema
 from src.utils.security import  get_current_user_instance
 from src.utils.exceptions import *
 from src.core import account
@@ -21,6 +21,16 @@ async def get_profile(
     username: str
 ):
     return await account.get_profile(username=username)
+
+
+@router.post("/upload", status_code=status.HTTP_201_CREATED)
+async def upload(
+    files: Annotated[
+        list[UploadFile], File(description="Multiple files as UploadFile")
+    ],
+    current_user: User = Depends(get_current_user_instance)
+):
+    return await account.upload(files=files)
 
 
 

@@ -1,5 +1,5 @@
-from fastapi import APIRouter, Depends, Request
-from settings import Engine, ENV
+from fastapi import Depends, UploadFile
+from settings import Engine
 from src.models.user import User
 from src.models.profile import Profile
 from src.schema.user import UserSchema, UserAuthResponeSchema, UserLoginSchema, UpdateUserProfileSchema
@@ -27,6 +27,19 @@ async def profile(
     user: User = Depends(get_current_user_instance)
 ):
     return user
+
+
+async def upload(
+    files: list[UploadFile],
+) -> list[str]:
+    links = []
+    for file in files:
+        print(file)
+        PATH = f"/media/{str(uuid4())}.png"
+        with open(f".{PATH}", "wb") as f:
+            f.write(file.file.read())
+            links.append(f"http://localhost:8000/account{PATH}")
+    return links
 
 
 async def update_profile(

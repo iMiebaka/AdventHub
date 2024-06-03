@@ -1,4 +1,4 @@
-import logging, pytest
+import logging, pytest, io
 from .payload import test_data as TEST_DATA
 from httpx import AsyncClient, ASGITransport
 from src.app import app
@@ -34,6 +34,25 @@ async def test_1_create_exhortation(async_app_client: AsyncClient):
     assert res_data["media_type"] == post["media_type"]
     assert res_data["author"]["first_name"] == user["first_name"]
     assert res_data["author"]["last_name"] == user["last_name"]
+
+
+    image_name = "src/test/asset/bible-image.jpg"
+    image = open(image_name, 'rb')
+    files = [
+        ("files", ("image.png", image, "image/png")),
+    ]
+
+    response = await async_app_client.post('/account/upload', files=files)
+    assert response.status_code == 401
+ 
+    response = await async_app_client.post(
+        '/account/upload', 
+        files=files, 
+        headers={
+            "Authorization": f"Bearer {access_token}"
+        })
+    assert response.status_code == 201
+
 
 
 @pytest.mark.asyncio(scope="session")
