@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, Request
 from settings import Engine, ENV
 from src.models.user import User
 from src.models.profile import Profile
-from src.schema.user import UserSchema, UserAuthResponeSchema, UserLoginSchema, UserProfileSchema, PrivateUserProfileSchema, UpdateUserProfileSchema
+from src.schema.user import UserSchema, UserAuthResponeSchema, UserLoginSchema, UserProfileSchema, PrivateUserProfileSchema, UpdateUserProfileSchema, SearchUserProfileSchema
 from src.utils.security import  get_current_user_instance
 from src.utils.exceptions import *
 from src.core import account
@@ -14,6 +14,14 @@ router = APIRouter(
     tags=["account"],
     responses={404: {"details": "Not found"}},
 )
+
+
+@router.get("", response_model=SearchUserProfileSchema)
+async def get_profile(
+    username: str
+):
+    return await account.get_profile(username=username)
+
 
 
 @router.get("/profile", response_model=PrivateUserProfileSchema)

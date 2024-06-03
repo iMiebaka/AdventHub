@@ -38,15 +38,25 @@ class UserProfileSchema(Base):
     username: str
     profile: ProfileSchema
 
+
+class SearchUserProfileSchema(Base):
+    first_name: str
+    last_name: str
+    username: str
+    profile: ProfileSchema
+    exhortation: List[ObjectId]
+
 class ProfileDisplaySchema(Base):
     postion: Optional[str] = None
     profile_picture: Optional[str] = None
+
 
 class UserDisplayProfileSchema(Base):
     id: ObjectId
     first_name: str
     last_name: str
     profile: ProfileDisplaySchema
+
 
 class UserSchema(Base):
     first_name: str
@@ -59,9 +69,11 @@ class UserSchema(Base):
         self.password = get_password_hash(self.password)
         return self
 
+
 class UserAuthResponeSchema(Base):
     access_token: str
     token_type: str
+
 
 class UserLoginSchema(Base):
     email: str

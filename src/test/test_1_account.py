@@ -8,6 +8,7 @@ from httpx import AsyncClient, ASGITransport
 from src.utils.security import create_access_token, get_current_user_instance
 from src.models.user import User
 from settings import Engine
+from odmantic import query
 
 engine = Engine
 LOGGER = logging.getLogger(__name__)
@@ -130,10 +131,30 @@ async def test_5_user_profile(async_app_client: AsyncClient):
     assert res_data["first_name"] == user["first_name"]
     assert res_data["last_name"] == user["last_name"]
 
+    user = await engine.find_one(User)
+    username = user.username
+    response = await async_app_client.get(
+        f"/account?username={username}",
+    )
+    res_data = response.json()
+    assert res_data["first_name"] == user.first_name
+    assert res_data["last_name"] == user.last_name
+    assert res_data["username"] == user.username
+
+    response = await async_app_client.get(
+        f"/account?username={username}321",
+    )
+    assert response.status_code == 404
+
+    user = await engine.find_one(User, sort=query.desc(User.created_at))
+    response = await async_app_client.get(
+        f"/account?username={username}",
+    )
+    assert response.status_code == 200
+
 
 @pytest.mark.asyncio(scope="session")
 async def test_6_update_profile(async_app_client: AsyncClient):
-    user = TEST_DATA.user_list(0)
     access_token:str = TEST_DATA.read_token(0)
 
     response = await async_app_client.get(
@@ -163,5 +184,4 @@ async def test_6_update_profile(async_app_client: AsyncClient):
         }
     )
     res_data = response.json()
-    LOGGER.info(res_data["profile"])
     assert res_data["profile"]["cover_picture"] != None

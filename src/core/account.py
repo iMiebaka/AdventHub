@@ -14,12 +14,18 @@ LOGGER = logging.getLogger(__name__)
 engine = Engine
 
 
+async def get_profile(
+    username: str
+):
+    user = await engine.find_one(User, User.username == username)
+    if user is None:
+        raise HTTPException(404)
+    return user
+
+
 async def profile(
     user: User = Depends(get_current_user_instance)
 ):
-    user = await engine.find_one(User, User.email == user.email)
-    if user is None:
-        raise HTTPException(404)
     return user
 
 
