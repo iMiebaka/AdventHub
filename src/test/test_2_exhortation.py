@@ -2,8 +2,13 @@ import logging, pytest, io
 from .payload import test_data as TEST_DATA
 from httpx import AsyncClient, ASGITransport
 from src.app import app
+from src.core.account import sign_up
+from src.schema.user import UserSchema
+from bson import ObjectId
+from settings import Engine
 
 
+engine = Engine
 LOGGER = logging.getLogger(__name__)
 
 @pytest.fixture(scope="session")
@@ -167,7 +172,7 @@ async def test_4_delete_exhortation(async_app_client: AsyncClient):
         }
     )
     res_data = response.json()
-    exhortation_length = len(res_data["exhortation"])
+    exhortation_length = res_data["exhortations"]
     response = await async_app_client.get(
         "/exhortation",
     )
@@ -206,4 +211,13 @@ async def test_4_delete_exhortation(async_app_client: AsyncClient):
         }
     )
     res_data = response.json()
-    assert len(res_data["exhortation"]) == exhortation_length -1
+    assert res_data["exhortations"] == exhortation_length -1
+
+# Eye opener
+# @pytest.mark.asyncio(scope="session")
+# async def test_5_exhortation_list():
+#     user: list = TEST_DATA.user_list(-1)
+#     user["email"] = "labrat@adventhub.com"
+#     account = await sign_up(user=UserSchema(**user))
+#     account.exhortation = [ObjectId() for _ in range(1000000)]
+#     await engine.save(account)

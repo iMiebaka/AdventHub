@@ -3,7 +3,7 @@ from settings import Engine
 from odmantic import ObjectId
 from src.models.user import User
 from src.models.exhortation import Exhortation
-from src.models.comment import Comment
+from src.models.comment import Comment, CommentReaction
 from src.schema.comment import CreateCommentSchema, UpdateCommentSchemaLogic, CommentListSchema, CommentSchemaLogic
 from src.utils.exceptions import *
 import logging, math
@@ -28,21 +28,23 @@ async def create_exhortation_comment(
             
         else:
             comment = Comment(**body.model_dump(), author=user, exhortation=exhortation)
-            exhortation.comments.append(comment.id)
-            await engine.save_all([comment, user])
+            await engine.save(comment)
             return comment
     except Exception as ex:
         raise HTTPException(400, detail=str(ex))
 
 
-def comment_list(user:User, comments: List[Comment]) -> List[Comment]:
+async def comment_list(user:User, comments: List[Comment]) -> List[Comment]:
     payload = []
     for comment in comments:
         comment_data = comment.model_dump()
 
-        if user and user.id in comment.reaction:
-            print(comment_data)
-            comment_data["liked"] = True
+        if user:
+            query = (CommentReaction.comment == comment_data["id"]) & (CommentReaction.user == user.id)
+            isLiked = await engine.count(CommentReaction, query)
+            comment_data["liked"] = isLiked > 0
+        comment_data["reaction"] =  await engine.count(
+                CommentReaction, CommentReaction.comment == comment_data["id"])
         payload.append(CommentSchemaLogic(**comment_data))
     return payload
 
@@ -58,7 +60,7 @@ async def get(
     comments = await engine.find(Comment, query, skip=skip, limit=limit)
     count = await engine.count(Comment, query)
     total_page = math.ceil(count/limit) if count >= limit else 1
-    data = comment_list(user=user, comments=comments)
+    data = await comment_list(user=user, comments=comments)
     # LOGGER.info(d)
     # data = [CommentSchemaLogic(**e.model_dump()) for e in comments]
     if len(data) == 0:
@@ -97,10 +99,10 @@ async def delete(
     if result.author.id != user.id:
         raise CommentAuthorNotFoundException() 
     try:
-        exhortation:Exhortation = result.exhortation
-        exhortation.comments.remove(result.id)
+        # exhortation:Exhortation = result.exhortation
+        # exhortation.comments.remove(result.id)
         await engine.delete(result)
-        await engine.save(exhortation)
+        # await engine.save(exhortation)
         return {"message": "Comment deleted"}
     except Exception as ex:
         raise HTTPException(400, detail=str(ex))

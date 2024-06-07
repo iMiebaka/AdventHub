@@ -3,6 +3,7 @@ from src.models.user import User
 from src.schema.user import UserSchema, UserAuthResponeSchema, UserLoginSchema,\
      UserProfileSchema, PrivateUserProfileSchema, UpdateUserProfileSchema,\
           SearchUserProfileSchema
+from src.models.exhortation import Exhortation
 from src.utils.security import  get_current_user_instance
 from src.utils.exceptions import *
 from src.core import account
@@ -16,11 +17,13 @@ router = APIRouter(
 )
 
 
-@router.get("", response_model=SearchUserProfileSchema)
+@router.get("")
 async def get_profile(
     username: str
 ):
-    return await account.get_profile(username=username)
+    res = await account.get_profile(username=username)
+    return SearchUserProfileSchema(**res)
+
 
 
 @router.post("/upload", status_code=status.HTTP_201_CREATED)
@@ -28,25 +31,27 @@ async def upload(
     files: Annotated[
         list[UploadFile], File(description="Multiple files as UploadFile")
     ],
-    current_user: User = Depends(get_current_user_instance)
+    _: User = Depends(get_current_user_instance)
 ):
     return await account.upload(files=files)
 
 
 
-@router.get("/profile", response_model=PrivateUserProfileSchema)
+@router.get("/profile")
 async def profile(
     current_user: User = Depends(get_current_user_instance)
 ):
-    return await account.profile(user=current_user)
+    res = await account.profile(user=current_user)
+    return PrivateUserProfileSchema(**res)
 
 
-@router.put("/profile", response_model=PrivateUserProfileSchema)
+@router.put("/profile")
 async def update_profile(
     payload: UpdateUserProfileSchema,
     current_user: User = Depends(get_current_user_instance)
 ):
-    return await account.update_profile(payload=payload, user=current_user)
+    res = await account.update_profile(payload=payload, user=current_user)
+    return PrivateUserProfileSchema(**res) 
 
 
 @router.post("/sign-up", response_model=UserProfileSchema)

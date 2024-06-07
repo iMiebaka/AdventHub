@@ -2,6 +2,8 @@ import logging, pytest
 from .payload import test_data as TEST_DATA
 from httpx import AsyncClient, ASGITransport
 from src.app import app
+from src.core.reaction import comment_reaction
+from src.models.user import User
 from src.models.comment import Comment
 from settings import Engine
 
@@ -75,7 +77,7 @@ async def test_1_reaction_exhortation(async_app_client: AsyncClient):
     response = await async_app_client.get(
         "/exhortation",
     )
-    assert len(response.json()["data"][0]["reaction"]) == total_length
+    assert response.json()["data"][0]["reaction"] == total_length
 
     res_data = res_datas[1]
     exhortationId = res_data["id"]
@@ -107,7 +109,6 @@ async def test_1_reaction_exhortation(async_app_client: AsyncClient):
 
 @pytest.mark.asyncio(scope="session")
 async def test_2_reaction_comment(async_app_client: AsyncClient):
-# Get post to exhortation ✅
     comments = await engine.find(Comment)
     commentId = str(comments[0].id)
 
@@ -128,7 +129,18 @@ async def test_2_reaction_comment(async_app_client: AsyncClient):
         }
     )
     assert response.json() == {'count': 1, 'reacted': True}
+    
+    exhortationId = comments[0].exhortation.id
+    response = await async_app_client.get(
+        f"/comment/exhortation?exhortationId={exhortationId}",
+          headers={
+            "Authorization": f"Bearer {access_token}"
+        }
+    )
+    res_data = response.json()
+    # LOGGER.info(res_data["data"][0])
 
+# unlike comment ✅
     response = await async_app_client.get(
         "/reaction/comment?id=" + commentId,
         headers={
@@ -136,6 +148,7 @@ async def test_2_reaction_comment(async_app_client: AsyncClient):
         }
     )
     assert response.json() == {'count': 0, 'reacted': False}
+
 
     response = await async_app_client.get(
         "/reaction/comment?id=" + commentId,
@@ -155,13 +168,12 @@ async def test_2_reaction_comment(async_app_client: AsyncClient):
     _res_data = response.json()
     assert _res_data == {'count': 2, 'reacted': True}
     total_length = _res_data["count"]
-    
     exhortationId = comments[0].exhortation.id
     response = await async_app_client.get(
         f"/comment/exhortation?exhortationId={exhortationId}",
     )
     res_data = response.json()
-    assert len(res_data["data"][0]["reaction"]) == total_length
+    assert res_data["data"][0]["reaction"] == total_length
 
     access_token = access_tokens[0]
     commentId = str(comments[1].id)
@@ -173,7 +185,7 @@ async def test_2_reaction_comment(async_app_client: AsyncClient):
     )
     assert response.json() == {'count': 1, 'reacted': True}
 
-# Check for liked
+    # Check for liked
     response = await async_app_client.get(
         f"/comment/exhortation?exhortationId={exhortationId}",
           headers={

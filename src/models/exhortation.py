@@ -11,11 +11,24 @@ class Exhortation(Model):
     edited_at: datetime = Field(default_factory=datetime.utcnow)
     created_at: datetime = Field(default_factory=datetime.utcnow)
     author: User = Reference()
-    comments: List[ObjectId] = []
-    reaction: List[ObjectId] = []
+    # DEPRECATE ⬇️
+    # comments: int = 0
+    # reaction: int = 0
 
     model_config = {
         "indexes": lambda: [
             Index(Exhortation.author, Exhortation.slug, name="post_index"),
+        ]
+    }
+
+
+
+class ExhortationReaction(Model):
+    exhortation: ObjectId
+    user: ObjectId
+
+    model_config = {
+        "indexes": lambda: [
+            Index(ExhortationReaction.exhortation, ExhortationReaction.user, name="exhortation_reaction_index"),
         ]
     }

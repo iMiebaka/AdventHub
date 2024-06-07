@@ -33,8 +33,8 @@ class ExhortationSchema(Base):
     author: UserDisplayProfileSchema
     edited_at: datetime 
     created_at: datetime 
-    comments: List[ObjectId]
-    reaction: List[ObjectId]
+    comments: Optional[int] = 0
+    reaction: Optional[int] = 0
 
 class ExhortationListSchema(Base):
     total_page: int

@@ -10,10 +10,11 @@ class Comment(Model):
     edited: bool = False
     exhortation: Exhortation = Reference()
     author: User = Reference()
-    reaction: List[ObjectId] = []
+    # reaction: int = 0 #DEPRECATE
     edited_at: datetime = Field(default_factory=datetime.utcnow)
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
 
 class CommentReaction(Model):
-    comment: Comment = Reference()
+    comment: ObjectId
+    user: ObjectId

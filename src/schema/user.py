@@ -18,7 +18,8 @@ class PrivateUserProfileSchema(Base):
     first_name: str
     last_name: str
     email: str
-    exhortation: List[ObjectId] # Done to control circular import
+    # exhortation: List[ObjectId] # Done to control circular import
+    exhortations: int
     profile: ProfileSchema
     username: str
 
@@ -44,7 +45,8 @@ class SearchUserProfileSchema(Base):
     last_name: str
     username: str
     profile: ProfileSchema
-    exhortation: List[ObjectId]
+    exhortations: int
+    # exhortation: List[ObjectId]
 
 class ProfileDisplaySchema(Base):
     postion: Optional[str] = None

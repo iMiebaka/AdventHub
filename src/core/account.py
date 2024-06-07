@@ -9,6 +9,7 @@ import logging, random
 from uuid import uuid4
 from typing import Annotated
 from fastapi.security import OAuth2PasswordRequestForm
+from src.models.exhortation import Exhortation
 
 LOGGER = logging.getLogger(__name__)
 engine = Engine
@@ -20,13 +21,17 @@ async def get_profile(
     user = await engine.find_one(User, User.username == username)
     if user is None:
         raise HTTPException(404)
-    return user
+    payload =  user.model_dump()
+    payload["exhortations"] = await engine.count(Exhortation, Exhortation.author == user.id)
+    return payload
 
 
 async def profile(
     user: User = Depends(get_current_user_instance)
 ):
-    return user
+    payload = user.model_dump()
+    payload["exhortations"] = await engine.count(Exhortation, Exhortation.author == user.id)
+    return payload
 
 
 async def upload(
@@ -34,7 +39,6 @@ async def upload(
 ) -> list[str]:
     links = []
     for file in files:
-        print(file)
         PATH = f"/media/{str(uuid4())}.png"
         with open(f".{PATH}", "wb") as f:
             f.write(file.file.read())
@@ -48,7 +52,9 @@ async def update_profile(
 ):
     user.model_update(payload)
     await engine.save(user)
-    return user
+    payload = user.model_dump()
+    payload["exhortations"] = await engine.count(Exhortation, Exhortation.author == user.id)
+    return payload
 
 
 async def generate_username(first_name: str, last_name: str) -> str:

@@ -15,7 +15,6 @@ class User(Model):
     public_id: str = Field(unique=True)
     created_at: datetime = Field(default_factory=datetime.utcnow)
     profile: Profile = Reference()
-    exhortation: List[ObjectId] = []
 
     model_config = {
         "indexes": lambda: [

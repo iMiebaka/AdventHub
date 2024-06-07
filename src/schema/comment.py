@@ -11,7 +11,7 @@ class CommentSchemaLogic(Base):
     edited: bool
     liked: Optional[bool] = False
     author: UserDisplayProfileSchema
-    reaction: List[ObjectId]
+    reaction: Optional[int] = 0
     edited_at: datetime
     created_at: datetime
 
