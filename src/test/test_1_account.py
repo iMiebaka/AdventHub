@@ -9,6 +9,9 @@ from src.utils.security import create_access_token, get_current_user_instance
 from src.models.user import User
 from settings import Engine
 from odmantic import query
+from src.core.account import sign_up
+from src.schema.user import UserSchema
+
 
 engine = Engine
 LOGGER = logging.getLogger(__name__)
@@ -33,15 +36,11 @@ async def test_1A_create_user(async_app_client: AsyncClient):
 
 
 @pytest.mark.asyncio(scope="session")
-async def test_1B_create_users_others(async_app_client: AsyncClient):
+async def test_1B_create_users_others():
     users: list = TEST_DATA.user_list("")
     users.pop(0)
     for iter, user in enumerate(users):
-        response = await async_app_client.post(
-            "/account/sign-up",
-            json=user,
-        )
-        assert response.status_code == 200, response.text
+        await sign_up(user=UserSchema(**user))
         user_exist = await engine.find_one(User, User.email == TEST_DATA.user_list(iter)["email"])
         assert user_exist.email == TEST_DATA.user_list(iter)["email"]
 
