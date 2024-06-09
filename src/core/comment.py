@@ -99,10 +99,7 @@ async def delete(
     if result.author.id != user.id:
         raise CommentAuthorNotFoundException() 
     try:
-        # exhortation:Exhortation = result.exhortation
-        # exhortation.comments.remove(result.id)
         await engine.delete(result)
-        # await engine.save(exhortation)
         return {"message": "Comment deleted"}
     except Exception as ex:
         raise HTTPException(400, detail=str(ex))

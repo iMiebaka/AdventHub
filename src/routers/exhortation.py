@@ -1,15 +1,13 @@
 from fastapi import APIRouter, Depends
 from settings import Engine
 from src.models.user import User
-from src.models.exhortation import Exhortation
-from src.schema.exhortation import CreateExhortationSchema, ExhortationSchema, ExhortationListSchema, UpdateExhortationSchema
-from src.schema.comment import CreateCommentSchema
+from src.schema.exhortation import CreateExhortationSchema, ExhortationSchema, UpdateExhortationSchema
 from src.utils.security import get_current_user_instance, get_current_user_optional_instance
 from src.core import exhortation
 from src.utils.exceptions import *
-import logging, math
-from typing import Optional, List
-from datetime import datetime
+import logging
+from typing import Optional
+from odmantic import ObjectId
 
 LOGGER = logging.getLogger(__name__)
 engine = Engine

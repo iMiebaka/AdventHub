@@ -9,6 +9,7 @@ from src.utils.exceptions import *
 import logging, math
 from typing import Optional, List
 from datetime import datetime
+from odmantic import ObjectId
 
 LOGGER = logging.getLogger(__name__)
 engine = Engine
