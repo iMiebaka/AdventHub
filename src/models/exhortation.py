@@ -5,7 +5,8 @@ from typing import List, Optional
 
 class Exhortation(Model):
     slug: str
-    media: str = Field(unique=True)
+    # body: str
+    media: str = Field(unique=True) #Deprecate
     media_type: str
     edited: bool = False
     edited_at: datetime = Field(default_factory=datetime.utcnow)

@@ -21,7 +21,7 @@ router = APIRouter(
 
 
 
-@router.post("", response_model=ExhortationSchema)
+@router.post("", response_model=ExhortationSchema, status_code=201)
 async def create(
     payload: CreateExhortationSchema,
     current_user: User = Depends(get_current_user_instance)
@@ -32,11 +32,11 @@ async def create(
 @router.get("/{username}")
 async def get(
     username: str,
-    slug: Optional[str] = None,
     page: Optional[int] = 1,
     limit: Optional[int] = 20,
+    current_user: User = Depends(get_current_user_optional_instance)
 ):  
-    return await exhortation.get_exhortation_via_username(slug=slug, page=page, limit=limit, username=username)
+    return await exhortation.get_exhortation_via_username(page=page, limit=limit, username=username, user=current_user)
 
 
 @router.get("")

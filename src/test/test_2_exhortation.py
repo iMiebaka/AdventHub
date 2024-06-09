@@ -4,7 +4,9 @@ from httpx import AsyncClient, ASGITransport
 from src.app import app
 from src.core.account import sign_up
 from src.models.user import User
+from src.models.exhortation import Exhortation
 from bson import ObjectId
+
 from settings import Engine
 
 
@@ -19,7 +21,7 @@ async def async_app_client():
 
 
 @pytest.mark.asyncio(scope="session")
-async def test_1_create_exhortation(async_app_client: AsyncClient):
+async def test_1A_create_exhortation(async_app_client: AsyncClient):
     user = TEST_DATA.user_list(0)
     access_token = TEST_DATA.read_token(0)
 
@@ -32,7 +34,7 @@ async def test_1_create_exhortation(async_app_client: AsyncClient):
             "Authorization": f"Bearer {access_token}"
         }
     )
-    assert response.status_code == 200
+    assert response.status_code == 201
     res_data = response.json()    
 
     assert res_data["media"] == post["media"]
@@ -59,9 +61,48 @@ async def test_1_create_exhortation(async_app_client: AsyncClient):
     assert response.status_code == 201
 
 
+@pytest.mark.asyncio(scope="session")
+async def test_1B_create_exhortation(async_app_client: AsyncClient):
+    access_token = TEST_DATA.read_token(1)
+
+
+    post = TEST_DATA.exhortation_list["textBase"][3]
+    response = await async_app_client.post(
+        "/exhortation",
+        json=post,
+        headers={
+            "Authorization": f"Bearer {access_token}"
+        }
+    )
+    assert response.status_code == 201
+
 
 @pytest.mark.asyncio(scope="session")
-async def test_2_read_exhortation(async_app_client: AsyncClient):
+async def test_2A_get_exhortation_via_username(async_app_client: AsyncClient):
+    user = await engine.find_one(User)
+    
+    # Get user does not exist ❌
+    response = await async_app_client.get(
+        f"/exhortation/{user.username}123",
+    )
+    assert response.status_code == 404
+
+
+    # Get user does not exist ✅
+    response = await async_app_client.get(
+        f"/exhortation/{user.username}",
+    )
+    assert response.status_code == 200
+    res_data = response.json()
+    assert res_data["count"] == 1
+
+    ex = await engine.find(Exhortation)
+    await engine.delete(ex[1])
+
+
+
+@pytest.mark.asyncio(scope="session")
+async def test_2B_read_exhortation(async_app_client: AsyncClient):
 # Getting all post ✅
     response = await async_app_client.get(
         "/exhortation",
@@ -163,7 +204,7 @@ async def test_4_delete_exhortation(async_app_client: AsyncClient):
                 "Authorization": f"Bearer {access_token}"
             }
         )
-        assert response.status_code == 200
+        assert response.status_code == 201
     
     response = await async_app_client.get(
         "/account/profile",
@@ -214,19 +255,7 @@ async def test_4_delete_exhortation(async_app_client: AsyncClient):
     assert res_data["exhortations"] == exhortation_length -1
 
 
-@pytest.mark.asyncio(scope="session")
-async def test_4_get_exhortation_via_username(async_app_client: AsyncClient):
 
-    user = await engine.find_one(User)
-    response = await async_app_client.get(
-        f"/exhortation/{user.username}",
-    )
-    assert response.status_code == 200
-
-    response = await async_app_client.get(
-        f"/exhortation/{user.username}123",
-    )
-    assert response.status_code == 404
 
 # Eye opener
 # @pytest.mark.asyncio(scope="session")

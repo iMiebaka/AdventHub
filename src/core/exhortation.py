@@ -85,16 +85,25 @@ async def get(
 
 async def get_exhortation_via_username(
     username: str,
-    slug: Optional[str] = None,
     page: Optional[int] = 1,
     limit: Optional[int] = 20,
+    user: User = Depends(get_current_user_optional_instance)
 
 ):  
     current_user = await engine.find_one(User, User.username == username)
     if current_user is None:
         raise UserNotFoundException()
-    return await get(slug=slug, page=page, limit=limit, user=current_user)
     
+    count = await engine.count(Exhortation, Exhortation.author == current_user.id)
+    skip = (page - 1) * limit
+    exhortations = await engine.find(Exhortation, Exhortation.author == current_user.id, skip=skip, limit=limit)
+    total_page = math.ceil(count/limit) if count >= limit else 1
+    data = await exhortation_list(user=user, exhortations=exhortations)
+    if len(data) == 0:
+        return ExhortationListSchema(page=1, data=data, total_page=0, count=0)
+
+    return ExhortationListSchema(page=page, data=data, total_page=total_page, count=count)
+
 
 async def update(
     slug: str,
