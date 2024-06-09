@@ -1,9 +1,9 @@
-from fastapi import APIRouter, Depends
+from fastapi import Depends
 from settings import Engine
 from src.models.user import User
 from src.models.exhortation import Exhortation, ExhortationReaction
 from src.schema.exhortation import CreateExhortationSchema, ExhortationSchema, ExhortationListSchema, UpdateExhortationSchema
-from src.models.comment import Comment, CommentReaction
+from src.models.comment import CommentReaction
 from src.utils.security import get_current_user_instance, get_current_user_optional_instance
 from src.utils.exceptions import *
 import logging, math
@@ -20,7 +20,6 @@ async def create(
 ):
     try:
         exhortation = Exhortation(**exhortation.model_dump(), author=user)
-        # user.exhortation.append(exhortation.id)
         await engine.save(exhortation)
         return exhortation
     except Exception as ex:
@@ -134,9 +133,5 @@ async def delete(
             raise HTTPException(404, detail="We could not find this Exhortation")
     if exhortation.author.id != user.id:
         raise HTTPException(401, detail="We could not find this Exhortation")
-    # DEPRECATE❗
-    # user.exhortation.remove(exhortation.id)
-    # await engine.save(user)
-    #############
     await engine.delete(exhortation)
     return {"message": "Exhortation deleted"}
