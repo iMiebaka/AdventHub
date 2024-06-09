@@ -20,7 +20,6 @@ class Exhortation(Model):
     }
 
 
-
 class ExhortationReaction(Model):
     exhortation: ObjectId
     user: ObjectId
@@ -30,3 +29,9 @@ class ExhortationReaction(Model):
             Index(ExhortationReaction.exhortation, ExhortationReaction.user, name="exhortation_reaction_index"),
         ]
     }
+
+
+class Highlighter(Model):
+    user: ObjectId
+    exhortation: Exhortation = Reference()
+    created_at: datetime = Field(default_factory=datetime.utcnow)
