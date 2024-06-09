@@ -222,7 +222,6 @@ async def test_4_get_exhortation_via_username(async_app_client: AsyncClient):
         f"/exhortation/{user.username}",
     )
     assert response.status_code == 200
-    LOGGER.info(response.json())
 
     response = await async_app_client.get(
         f"/exhortation/{user.username}123",
