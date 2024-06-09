@@ -11,9 +11,6 @@ class Exhortation(Model):
     edited_at: datetime = Field(default_factory=datetime.utcnow)
     created_at: datetime = Field(default_factory=datetime.utcnow)
     author: User = Reference()
-    # DEPRECATE ⬇️
-    # comments: int = 0
-    # reaction: int = 0
 
     model_config = {
         "indexes": lambda: [
