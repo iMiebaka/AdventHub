@@ -1,5 +1,5 @@
 from fastapi import Depends, UploadFile
-from settings import Engine
+from settings import Engine, ENV
 from src.models.user import User
 from src.models.profile import Profile
 from src.schema.user import UserSchema, UserAuthResponeSchema, UserLoginSchema, UpdateUserProfileSchema
@@ -39,7 +39,8 @@ async def upload(
 ) -> list[str]:
     links = []
     for file in files:
-        PATH = f"/media/{str(uuid4())}.png"
+
+        PATH = f"/media/{str(uuid4())}.png" if ENV != "testing" else f"/media/{str(uuid4())}-test.png"
         with open(f".{PATH}", "wb") as f:
             f.write(file.file.read())
             links.append(f"http://localhost:8000/account{PATH}")
