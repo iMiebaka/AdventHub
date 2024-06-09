@@ -3,7 +3,7 @@ from .payload import test_data as TEST_DATA
 from httpx import AsyncClient, ASGITransport
 from src.app import app
 from src.core.account import sign_up
-from src.schema.user import UserSchema
+from src.models.user import User
 from bson import ObjectId
 from settings import Engine
 
@@ -212,6 +212,22 @@ async def test_4_delete_exhortation(async_app_client: AsyncClient):
     )
     res_data = response.json()
     assert res_data["exhortations"] == exhortation_length -1
+
+
+@pytest.mark.asyncio(scope="session")
+async def test_4_get_exhortation_via_username(async_app_client: AsyncClient):
+
+    user = await engine.find_one(User)
+    response = await async_app_client.get(
+        f"/exhortation/{user.username}",
+    )
+    assert response.status_code == 200
+    LOGGER.info(response.json())
+
+    response = await async_app_client.get(
+        f"/exhortation/{user.username}123",
+    )
+    assert response.status_code == 404
 
 # Eye opener
 # @pytest.mark.asyncio(scope="session")

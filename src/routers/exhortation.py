@@ -29,6 +29,16 @@ async def create(
     return await exhortation.create(exhortation=payload, user=current_user)
 
 
+@router.get("/{username}")
+async def get(
+    username: str,
+    slug: Optional[str] = None,
+    page: Optional[int] = 1,
+    limit: Optional[int] = 20,
+):  
+    return await exhortation.get_exhortation_via_username(slug=slug, page=page, limit=limit, username=username)
+
+
 @router.get("")
 async def get(
     slug: Optional[str] = None,

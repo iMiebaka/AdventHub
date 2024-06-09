@@ -81,6 +81,19 @@ async def get(
             return ExhortationListSchema(page=1, data=data, total_page=0, count=0)
 
         return ExhortationListSchema(page=page, data=data, total_page=total_page, count=count)
+
+
+async def get_exhortation_via_username(
+    username: str,
+    slug: Optional[str] = None,
+    page: Optional[int] = 1,
+    limit: Optional[int] = 20,
+
+):  
+    current_user = await engine.find_one(User, User.username == username)
+    if current_user is None:
+        raise UserNotFoundException()
+    return await get(slug=slug, page=page, limit=limit, user=current_user)
     
 
 async def update(
