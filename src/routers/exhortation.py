@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, UploadFile, File, Form
 from settings import Engine
 from src.models.user import User
-from src.schema.exhortation import CreateExhortationSchema, ExhortationSchema, UpdateExhortationSchema
+from src.schema.exhortation import  ExhortationSchema, UpdateExhortationSchema
 from src.utils.security import get_current_user_instance, get_current_user_optional_instance
 from src.core import exhortation
 from src.utils.exceptions import *
