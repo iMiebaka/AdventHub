@@ -14,8 +14,9 @@ def generate_alphanumeric(length):
 
 
 class CreateExhortationSchema(Base):
-    media: str
-    media_type: str
+    body: str
+    # media: str
+    # media_type: str
     slug: Optional[str] = None
 
     @model_validator(mode="after")
@@ -26,9 +27,10 @@ class CreateExhortationSchema(Base):
 
 class ExhortationSchema(Base):
     id: ObjectId
+    body: str
     slug: str
-    media: str
-    media_type: str
+    # media: str
+    # media_type: str
     liked: Optional[bool] = False
     author: UserDisplayProfileSchema
     edited_at: datetime 
@@ -44,4 +46,5 @@ class ExhortationListSchema(Base):
 
 
 class UpdateExhortationSchema(Base):
-    media: str = None
+    body: str = None
+    # media: str = None

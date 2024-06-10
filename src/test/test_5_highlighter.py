@@ -113,7 +113,7 @@ async def test_3_de_hightlight(async_app_client: AsyncClient):
     res_datas = response.json()["data"]
 
     post = TEST_DATA.exhortation_list["textBase"][3]
-    post["media"] = "This must be highlighted at all times"
+    post["body"] = "This must be highlighted at all times"
     response = await async_app_client.post(
         "/exhortation",
         json=post,
@@ -123,7 +123,7 @@ async def test_3_de_hightlight(async_app_client: AsyncClient):
     )
     assert response.status_code == 201
     exhortationId = response.json()["id"]
-    
+
     access_token = access_tokens[0]
     response = await async_app_client.post(
             "/highlights",

@@ -37,8 +37,7 @@ async def test_1A_create_exhortation(async_app_client: AsyncClient):
     assert response.status_code == 201
     res_data = response.json()    
 
-    assert res_data["media"] == post["media"]
-    assert res_data["media_type"] == post["media_type"]
+    assert res_data["body"] == post["body"]
     assert res_data["author"]["first_name"] == user["first_name"]
     assert res_data["author"]["last_name"] == user["last_name"]
 
@@ -134,7 +133,7 @@ async def test_3_update_exhortation(async_app_client: AsyncClient):
 
     slug = post["slug"]
     new_title = "lorem updated"
-    post["media"] = new_title
+    post["body"] = new_title
     
     # Update post ✅
     response = await async_app_client.put(
@@ -146,13 +145,12 @@ async def test_3_update_exhortation(async_app_client: AsyncClient):
     )
     assert response.status_code == 200
     res_data = response.json()  
-    assert res_data["media"] == new_title
+    assert res_data["body"] == new_title
     
-    # Update post with attempt to change slug and media type ❌
+    # Update post with attempt to change slug ❌
     new_title = "lorem updated 2"
-    post["media"] = new_title
+    post["body"] = new_title
     post["slug"] = "changeSlug"
-    post["media_type"] = "VIDEO"
     response = await async_app_client.put(
         f"/exhortation?slug={slug}",
         json=post,
@@ -162,11 +160,9 @@ async def test_3_update_exhortation(async_app_client: AsyncClient):
     )
     assert response.status_code == 200
     res_data = response.json() 
-    assert res_data["media"] == new_title
+    assert res_data["body"] == new_title
     assert res_data["slug"] != post["slug"]
-    assert res_data["media_type"] != post["media_type"]
     assert res_data["slug"] == slug
-    assert res_data["media_type"] == "TEXT"
     
     access_tokens.pop(0)
     for iter, access_token in enumerate(access_tokens):
