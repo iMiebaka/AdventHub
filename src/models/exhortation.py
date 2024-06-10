@@ -1,17 +1,24 @@
-from odmantic import Model, Field, Index, Reference, ObjectId
+from odmantic import Model, Field, Index, Reference, ObjectId, EmbeddedModel
 from datetime import datetime
 from .user import User
-from typing import List, Optional
+from typing import List
+
+
+
+
+class ExhortationMedia(EmbeddedModel):
+    media: str
+    media_type: str
+
 
 class Exhortation(Model):
     slug: str
     body: str
-    # media: str = Field(unique=True) #Deprecate
-    # media_type: str
     edited: bool = False
     edited_at: datetime = Field(default_factory=datetime.utcnow)
     created_at: datetime = Field(default_factory=datetime.utcnow)
     author: User = Reference()
+    media: List[ExhortationMedia] = []
 
     model_config = {
         "indexes": lambda: [

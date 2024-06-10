@@ -5,7 +5,6 @@ from src.app import app
 from uuid import uuid4 
 from bson import ObjectId
 from settings import Engine
-from src.models.comment import User
 from src.models.comment import Comment
 
 

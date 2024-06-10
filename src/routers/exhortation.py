@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, UploadFile, File, Form
 from settings import Engine
 from src.models.user import User
 from src.schema.exhortation import CreateExhortationSchema, ExhortationSchema, UpdateExhortationSchema
@@ -6,8 +6,8 @@ from src.utils.security import get_current_user_instance, get_current_user_optio
 from src.core import exhortation
 from src.utils.exceptions import *
 import logging
-from typing import Optional
-from odmantic import ObjectId
+from typing import Optional, List
+
 
 LOGGER = logging.getLogger(__name__)
 engine = Engine
@@ -21,10 +21,12 @@ router = APIRouter(
 
 @router.post("", response_model=ExhortationSchema, status_code=201)
 async def create(
-    payload: CreateExhortationSchema,
+    body: str = Form(...),
+    medias: List[UploadFile] = File(None),
+    # payload: CreateExhortationSchema,
     current_user: User = Depends(get_current_user_instance)
 ):
-    return await exhortation.create(exhortation=payload, user=current_user)
+    return await exhortation.create(exhortation=body, user=current_user)
 
 
 @router.get("/{username}")

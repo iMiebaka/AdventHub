@@ -2,9 +2,6 @@ import logging, pytest
 from .payload import test_data as TEST_DATA
 from httpx import AsyncClient, ASGITransport
 from src.app import app
-from src.core.reaction import comment_reaction
-from src.models.user import User
-from src.models.comment import Comment
 from settings import Engine
 
 
@@ -116,7 +113,7 @@ async def test_3_de_hightlight(async_app_client: AsyncClient):
     post["body"] = "This must be highlighted at all times"
     response = await async_app_client.post(
         "/exhortation",
-        json=post,
+        data=post,
         headers={
             "Authorization": f"Bearer {access_token}"
         }

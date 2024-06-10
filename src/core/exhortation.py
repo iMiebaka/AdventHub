@@ -2,29 +2,35 @@ from fastapi import Depends
 from settings import Engine
 from src.models.user import User
 from src.models.exhortation import Exhortation, ExhortationReaction
-from src.schema.exhortation import CreateExhortationSchema, ExhortationSchema, ExhortationListSchema, UpdateExhortationSchema
+from src.schema.exhortation import ExhortationSchema, ExhortationListSchema, UpdateExhortationSchema
 from src.models.comment import CommentReaction
 from src.utils.security import get_current_user_instance, get_current_user_optional_instance
 from src.utils.exceptions import *
-import logging, math
+import logging, math, string, random
 from typing import Optional, List
 from datetime import datetime
-from odmantic import ObjectId
+
 
 LOGGER = logging.getLogger(__name__)
 engine = Engine
 
+def generate_alphanumeric(length):
+    characters = string.ascii_letters + string.digits
+    return ''.join(random.choice(characters) for _ in range(length))
+
 
 async def create(
-    exhortation: CreateExhortationSchema,
+    exhortation: str,
     user: User = Depends(get_current_user_instance)
 ):
     try:
-        exhortation = Exhortation(**exhortation.model_dump(), author=user)
+        slug = generate_alphanumeric(10)
+        exhortation = Exhortation(body=exhortation, author=user, slug=slug)
         await engine.save(exhortation)
         return exhortation
     except Exception as ex:
         raise HTTPException(400, detail=str(ex))
+
 
 async def exhortation_list(user:User, exhortations: List[Exhortation], as_list=True) -> Exhortation:
     if as_list:

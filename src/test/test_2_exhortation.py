@@ -1,13 +1,11 @@
-import logging, pytest, io
-from .payload import test_data as TEST_DATA
+import logging, pytest
 from httpx import AsyncClient, ASGITransport
+from .payload import test_data as TEST_DATA
 from src.app import app
-from src.core.account import sign_up
 from src.models.user import User
 from src.models.exhortation import Exhortation
-from bson import ObjectId
-
 from settings import Engine
+
 
 
 engine = Engine
@@ -29,14 +27,13 @@ async def test_1A_create_exhortation(async_app_client: AsyncClient):
     post = TEST_DATA.exhortation_list["textBase"][0]
     response = await async_app_client.post(
         "/exhortation",
-        json=post,
+        data=post,
         headers={
             "Authorization": f"Bearer {access_token}"
         }
     )
-    assert response.status_code == 201
     res_data = response.json()    
-
+    assert response.status_code == 201
     assert res_data["body"] == post["body"]
     assert res_data["author"]["first_name"] == user["first_name"]
     assert res_data["author"]["last_name"] == user["last_name"]
@@ -68,7 +65,7 @@ async def test_1B_create_exhortation(async_app_client: AsyncClient):
     post = TEST_DATA.exhortation_list["textBase"][3]
     response = await async_app_client.post(
         "/exhortation",
-        json=post,
+        data=post,
         headers={
             "Authorization": f"Bearer {access_token}"
         }
@@ -195,7 +192,7 @@ async def test_4_delete_exhortation(async_app_client: AsyncClient):
         post  = TEST_DATA.exhortation_list["textBase"][index + 1]
         response = await async_app_client.post(
             "/exhortation",
-            json=post,
+            data=post,
             headers={
                 "Authorization": f"Bearer {access_token}"
             }
