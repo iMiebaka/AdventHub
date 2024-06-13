@@ -1,7 +1,7 @@
 from settings import Engine
 from src.models.user import User
 from src.models.exhortation import Highlighter, Exhortation
-from src.schema.highlighter import HighlighterSchema, HighlighterListSchema
+from src.schema.highlighter import HighlighterSchema, HighlighterListSchema, HighlightSchema
 from src.utils.exceptions import *
 import logging, math
 from typing import Optional, List
@@ -11,7 +11,7 @@ LOGGER = logging.getLogger(__name__)
 engine = Engine
 
 
-async def create_destory_highlight(highlighter: HighlighterSchema, user:User) -> bool:
+async def create_destory_highlight(highlighter: HighlightSchema, user:User) -> bool:
     id = highlighter.exhortationId
     query = (Highlighter.exhortation == id) & (Highlighter.user == user.id)
     highlight = await engine.find_one(Highlighter, query)
