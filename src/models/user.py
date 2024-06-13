@@ -21,4 +21,15 @@ class User(Model):
             Index(User.first_name, User.last_name, name="name_index"),
         ]
     }
+
+class FollowerFollowing(Model):
+    user: User = Reference()
+    friend: User = Reference()
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+    model_config = {
+        "indexes": lambda: [
+            Index(User.user, User.friend, name="name_index"),
+        ]
+    }
     

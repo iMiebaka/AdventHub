@@ -12,15 +12,24 @@ class ProfileSchema(Base):
     profile_picture: Optional[str] = None
     cover_picture: Optional[str] = None
     about_me: Optional[str] = None
-    
+
+class PrivateProfileSchema(Base):
+    postion: Optional[str] = None
+    location: Optional[str] = None
+    profile_picture: Optional[str] = None
+    cover_picture: Optional[str] = None
+    about_me: Optional[str] = None
+    followers: Optional[int] = 0
+    following: Optional[int] = 0
+
+
 class PrivateUserProfileSchema(Base):
     id: ObjectId
     first_name: str
     last_name: str
     email: str
-    # exhortation: List[ObjectId] # Done to control circular import
     exhortations: int
-    profile: ProfileSchema
+    profile: PrivateProfileSchema
     username: str
 
 class UpdateUserProfileSchema(Base):
@@ -46,7 +55,6 @@ class SearchUserProfileSchema(Base):
     username: str
     profile: ProfileSchema
     exhortations: int
-    # exhortation: List[ObjectId]
 
 class ProfileDisplaySchema(Base):
     postion: Optional[str] = None

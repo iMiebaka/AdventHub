@@ -4,6 +4,7 @@ from src.routers import exhortation
 from src.routers import comment
 from src.routers import reaction
 from src.routers import highlighter
+from src.routers import request
 from starlette.middleware.cors import CORSMiddleware
 
 app = FastAPI()
@@ -26,3 +27,4 @@ app.include_router(exhortation.router)
 app.include_router(comment.router)
 app.include_router(reaction.router)
 app.include_router(highlighter.router)
+app.include_router(request.router)

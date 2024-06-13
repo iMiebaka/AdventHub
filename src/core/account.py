@@ -1,6 +1,6 @@
 from fastapi import Depends, UploadFile
 from settings import Engine, ENV
-from src.models.user import User
+from src.models.user import User, FollowerFollowing
 from src.models.profile import Profile
 from src.schema.user import UserSchema, UserAuthResponeSchema, UserLoginSchema, UpdateUserProfileSchema
 from src.utils.security import  authenticate_user, create_access_token, get_current_user_instance, init_passkey_history
@@ -31,6 +31,8 @@ async def profile(
 ):
     payload = user.model_dump()
     payload["exhortations"] = await engine.count(Exhortation, Exhortation.author == user.id)
+    payload["profile"]["followers"] = await engine.count(FollowerFollowing, FollowerFollowing.user == user.id)
+    payload["profile"]["following"] = await engine.count(FollowerFollowing, FollowerFollowing.friend == user.id)
     return payload
 
 
