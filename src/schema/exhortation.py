@@ -11,10 +11,6 @@ class ExhortationMedia(Base):
     media_type: str
 
 
-# class CreateExhortationSchema(Base):
-#     body: str
-
-
 class ExhortationSchema(Base):
     id: ObjectId
     body: str
@@ -26,6 +22,7 @@ class ExhortationSchema(Base):
     created_at: datetime 
     comments: Optional[int] = 0
     reaction: Optional[int] = 0
+
 
 class ExhortationListSchema(Base):
     total_page: int
